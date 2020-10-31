@@ -50,3 +50,8 @@ After reading the file, the cli should :
 - Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]`
 - Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]`
 
+
+
+For later
+- Detect if future file already exist
+- If future file already exist, try to apply the command line recursively to its Routes enum?
