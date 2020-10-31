@@ -16,3 +16,4 @@ readme = "README.md"
 structopt="0.3.20"
 anyhow = "1.0"
 syn = { version =  "1.0.40" ,  features = ["full"]}
+convert_case = "^0.4"
