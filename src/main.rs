@@ -43,11 +43,9 @@ fn main() -> Result<()> {
             if found_enum.ident == "Routes" {
                 for v in found_enum.variants.iter() {
                     println!("routes => {}", v.ident);
-                    if v.fields.len() > 0 {
-                        for f in v.fields.iter() {
-                            if let Some(i) = f.ident.as_ref() {
-                                println!("specific_fields {}", i);
-                            }
+                    for f in v.fields.iter() {
+                        if let Some(i) = f.ident.as_ref() {
+                            println!("specific_fields {}", i);
                         }
                     }
                 }
