@@ -45,6 +45,7 @@ fn main() -> Result<()> {
     let mut files_to_create: Vec<String> = vec![]; // each of them should be unique
     let mut local_views_to_create: Vec<String> = vec![]; // each of them should be unique
     let mut guards_to_create: Vec<String> = vec![]; // each of them should be unique
+    let mut future_directory: Option<String> = None;
 
     let ast = syn::parse_file(&src)?;
     for a in ast.items.iter() {
@@ -52,8 +53,7 @@ fn main() -> Result<()> {
             eprintln!("got enum {} ", found_enum.ident);
 
             if found_enum.ident == "Routes" {
-                let future_directory = modules_path(found_enum.attrs.iter());
-
+                future_directory = modules_path(found_enum.attrs.iter());
                 for v in found_enum.variants.iter() {
                     println!("routes => {}", v.ident);
 
@@ -93,6 +93,11 @@ fn main() -> Result<()> {
     println!("{} items", ast.items.len());
 
     println!("{} files will be created", files_to_create.len());
+
+    if let Some(path) = future_directory {
+        println!("under directory {}", path);
+    }
+
     println!(
         "{} local views will be created",
         local_views_to_create.len()
