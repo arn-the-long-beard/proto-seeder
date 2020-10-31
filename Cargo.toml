@@ -19,3 +19,4 @@ syn = { version =  "1.0.40" ,  features = ["full"]}
 convert_case = "^0.4"
 proc-macro-error = "^1"
 proc-macro2 = "^1"
+indicatif = "0.15.0"
