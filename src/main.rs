@@ -2,7 +2,8 @@ use crate::{module::modules_path, view::variant_view_path_tuple};
 
 use crate::view::variant_guard_path_tuple;
 use convert_case::{Case, Casing};
-use std::{fs::File, io::Read};
+use indicatif::{ProgressBar, ProgressStyle};
+use std::{fs::File, io::Read, thread, time::Duration};
 use structopt::StructOpt;
 use syn::{Attribute, Error, Item, Lit, LitStr, Meta, MetaNameValue, Result};
 
@@ -19,6 +20,24 @@ struct Cli {
 }
 
 fn main() -> anyhow::Result<()> {
+    let pb = ProgressBar::new_spinner();
+    pb.enable_steady_tick(120);
+    pb.set_style(
+        ProgressStyle::default_spinner()
+            // For more spinners check out the cli-spinners project:
+            // https://github.com/sindresorhus/cli-spinners/blob/master/spinners.json
+            .tick_strings(&[
+                "▹▹▹▹▹",
+                "▸▹▹▹▹",
+                "▹▸▹▹▹",
+                "▹▹▸▹▹",
+                "▹▹▹▸▹",
+                "▹▹▹▹▸",
+                "▪▪▪▪▪",
+            ])
+            .template("{spinner:.blue} {msg}"),
+    );
+
     let args: Cli = Cli::from_args();
     let mut file = File::open(&args.path)
         .unwrap_or_else(|_| panic!("Unable to open file , {}", &args.path.to_str().unwrap()));
@@ -96,6 +115,18 @@ fn main() -> anyhow::Result<()> {
         local_views_to_create.len()
     );
     println!("{} guards will be created", guards_to_create.len());
+
+    pb.println("[+] finished parsing the file");
+
+    pb.set_message("Updating your files.");
+    thread::sleep(Duration::from_secs(3));
+    pb.println("[+] Files updated"); // todo add files names
+
+    pb.set_message("Creating new files.");
+    pb.println("[+] Files created"); // todo add files names
+    thread::sleep(Duration::from_secs(3));
+
+    pb.finish_with_message("Done");
 
     Ok(())
     // todo add counting maybe ?
