@@ -2,13 +2,7 @@ use crate::{module::modules_path, view::variant_view_path_tuple};
 
 use crate::view::variant_guard_path_tuple;
 use convert_case::{Case, Casing};
-use std::{
-    fmt::Display,
-    fs::File,
-    io,
-    io::{BufRead, BufReader, Lines, Read},
-    path::Path,
-};
+use std::{fs::File, io::Read};
 use structopt::StructOpt;
 use syn::{Attribute, Error, Item, Lit, LitStr, Meta, MetaNameValue, Result};
 
@@ -24,18 +18,8 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-fn main() -> Result<()> {
+fn main() -> anyhow::Result<()> {
     let args: Cli = Cli::from_args();
-    // match read_lines(&args.path) {
-    //     Ok(lines) => {
-    //         for line in lines {
-    //             println!("{}", line.unwrap());
-    //         }
-    //         Ok(())
-    //     }
-    //     Err(e) => Err(Error::from(e)),
-    // }
-
     let mut file = File::open(&args.path)
         .unwrap_or_else(|_| panic!("Unable to open file , {}", &args.path.to_str().unwrap()));
 
@@ -47,12 +31,16 @@ fn main() -> Result<()> {
     let mut guards_to_create: Vec<String> = vec![]; // each of them should be unique
     let mut future_directory: Option<String> = None;
 
-    let ast = syn::parse_file(&src)?;
-    for a in ast.items.iter() {
+    let mut found_routes: Option<String> = None;
+
+    let parsed_file = syn::parse_file(&src)?;
+
+    for a in parsed_file.items.iter() {
         if let Item::Enum(found_enum) = a {
             eprintln!("got enum {} ", found_enum.ident);
 
             if found_enum.ident == "Routes" {
+                found_routes = Some(found_enum.ident.clone().to_string());
                 future_directory = modules_path(found_enum.attrs.iter());
                 for v in found_enum.variants.iter() {
                     println!("routes => {}", v.ident);
@@ -90,7 +78,12 @@ fn main() -> Result<()> {
         }
     }
 
-    println!("{} items", ast.items.len());
+    if found_routes.is_none() {
+        println!("No routes detected, so nothing will be created");
+        return Ok(());
+    }
+
+    println!("{} items", parsed_file.items.len());
 
     println!("{} files will be created", files_to_create.len());
 
@@ -103,8 +96,8 @@ fn main() -> Result<()> {
         local_views_to_create.len()
     );
     println!("{} guards will be created", guards_to_create.len());
-    Ok(())
 
+    Ok(())
     // todo add counting maybe ?
 }
 
