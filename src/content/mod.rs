@@ -1,4 +1,4 @@
-use crate::{content::view::get_local_view, module::modules_path};
+use crate::{content::view::get_local_views, module::modules_path};
 use indexmap::map::IndexMap;
 use syn::{Field, ItemEnum, ItemStruct};
 
@@ -30,7 +30,7 @@ impl SeedContent {
 impl SeedContent {
     pub fn new(routes_enum: ItemEnum, model: ItemStruct) -> Self {
         SeedContent {
-            local_views: get_local_view(&routes_enum, model),
+            local_views: get_local_views(&routes_enum, model),
             guards: IndexMap::new(),
             directory: modules_path(&routes_enum.attrs.iter()),
             modules: IndexMap::new(),

@@ -5,7 +5,7 @@ use crate::{
 use indexmap::map::IndexMap;
 use syn::{export::ToTokens, ItemEnum, ItemStruct};
 
-pub fn get_local_view(
+pub fn get_local_views(
     routes_enum: &ItemEnum,
     model: ItemStruct,
 ) -> IndexMap<String, (String, SeedRoute)> {
