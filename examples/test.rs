@@ -1,1 +1,2 @@
+#[ignore]
 pub struct Dummy {}
