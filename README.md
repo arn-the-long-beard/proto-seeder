@@ -43,14 +43,14 @@ This proto cli should be able to parse a rust file and read the Routes enum :
 
 After reading the file, the cli should :
 
-- Complain if Routes not found ( then it will do nothing )
-- Complain if Model not found ( then it will do nothing )
+- Complain if Routes not found ( then it will do nothing ) -> Done
+- Complain if Model not found ( then it will do nothing ) -> Done
 - Extract the Url payload from a route ( id_param, query and children) or Extract nested route if any as single variant tuple
 - Extract the routes and display stats ( how many view, files it will create )
 - Create the right sub directory(ies?) with the correct name(s) ->   `#[modules_path]`
 - Create the right file when route is module and create its view & init with the right payload extracted in step 2
-- Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]`
-- Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]`
+- Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]` -> Done
+- Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]` -> Done
 
 
 
