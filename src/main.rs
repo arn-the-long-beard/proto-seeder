@@ -9,6 +9,7 @@ use syn::{Attribute, Error, Item, ItemEnum, ItemStruct, Lit, LitStr, Meta, MetaN
 
 mod constants;
 mod module;
+mod seed_content;
 mod view;
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(StructOpt, Debug)]
@@ -170,18 +171,18 @@ fn find_model(file: &syn::File) -> Option<ItemStruct> {
 #[cfg(test)]
 mod test {
     use crate::{
-        constants::{FILE_WITHOUT_MODEL, FILE_WITHOUT_ROUTES, FILE_WITH_ROUTES},
+        constants::{_FILE_WITHOUT_ROUTES_NOR_MODEL, _FILE_WITH_ROUTES_AND_MODEL},
         find_model, find_routes,
     };
 
     #[test]
     fn test_find_routes() {
-        let parsed_file = syn::parse_file(FILE_WITH_ROUTES).unwrap();
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
         let route = find_routes(&parsed_file);
 
         assert_eq!(route.is_some(), true);
 
-        let parsed_file = syn::parse_file(FILE_WITHOUT_ROUTES).unwrap();
+        let parsed_file = syn::parse_file(_FILE_WITHOUT_ROUTES_NOR_MODEL).unwrap();
         let route = find_routes(&parsed_file);
 
         assert_eq!(route.is_some(), false)
@@ -189,12 +190,12 @@ mod test {
 
     #[test]
     fn test_find_model() {
-        let parsed_file = syn::parse_file(FILE_WITH_ROUTES).unwrap();
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
         let model = find_model(&parsed_file);
 
         assert_eq!(model.is_some(), true);
 
-        let parsed_file = syn::parse_file(FILE_WITHOUT_MODEL).unwrap();
+        let parsed_file = syn::parse_file(_FILE_WITHOUT_ROUTES_NOR_MODEL).unwrap();
         let model = find_model(&parsed_file);
 
         assert_eq!(model.is_some(), false)

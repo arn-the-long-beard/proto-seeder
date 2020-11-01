@@ -1,4 +1,4 @@
-pub const FILE_WITH_ROUTES: &str = r###"
+pub const _FILE_WITH_ROUTES_AND_MODEL: &str = r###"
     
 // ------ ------
 //     Init
@@ -54,7 +54,7 @@ pub enum Routes {
     #[default_route]
     #[view = " => not_found"] // -> http://localhost:8000/not_found*
     NotFound,
-    #[view = " => forbidden"] // -> http://localhost:8000/forbidden*
+    #[view = "logged_user => forbidden"] // -> http://localhost:8000/forbidden*
     Forbidden,
     #[as_path = ""]
     #[view = "theme => home"] // -> http://localhost:8000/
@@ -62,7 +62,7 @@ pub enum Routes {
 }
  "###;
 
-pub const FILE_WITHOUT_ROUTES: &str = r###"
+pub const _FILE_WITHOUT_ROUTES_NOR_MODEL: &str = r###"
     
 // ------ ------
 //     Init
@@ -85,22 +85,5 @@ fn init(url: Url, orders: &mut impl Orders<Msg,>,) -> Model {
         router,
         logged_user: None,
     }
-}
- "###;
-
-pub const FILE_WITHOUT_MODEL: &str = r###"
-    
-// ------ ------
-//     Init
-// ------ ------
-
-fn init(url: Url, orders: &mut impl Orders<Msg,>,) -> Model {
-    orders
-        .subscribe(Msg::UrlChanged,)
-        .subscribe(Msg::UrlRequested,)
-        .subscribe(Msg::UserLogged,);
-
-    let mut router: Router<Routes,> = Router::new();
-    router.init_url_and_navigation(url,);
 }
  "###;
