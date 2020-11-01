@@ -5,8 +5,9 @@ use convert_case::{Case, Casing};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{fs::File, io::Read, thread, time::Duration};
 use structopt::StructOpt;
-use syn::{Attribute, Error, Item, ItemEnum, Lit, LitStr, Meta, MetaNameValue, Result};
+use syn::{Attribute, Error, Item, ItemEnum, ItemStruct, Lit, LitStr, Meta, MetaNameValue, Result};
 
+mod constants;
 mod module;
 mod view;
 /// Search for a pattern in a file and display the lines that contain it.
@@ -54,22 +55,13 @@ fn main() -> anyhow::Result<()> {
 
     let parsed_file = syn::parse_file(&src)?;
 
-    let enum_route = parsed_file
-        .items
-        .iter()
-        .find_map(|item| -> Option<ItemEnum> {
-            if let Item::Enum(found_enum) = item {
-                if found_enum.ident == "Routes" {
-                    return Some(found_enum.clone());
-                }
-            }
-            None
-        });
     pb.set_message("Searching for routes");
+    let enum_route = find_routes(&parsed_file);
+
+    let model = find_model(&parsed_file);
+
     if let Some(routes) = enum_route {
         eprintln!("got enum {} ", routes.ident);
-        found_routes = Some(routes.ident.to_string());
-
         found_routes = Some(routes.ident.to_string());
         future_directory = modules_path(routes.attrs.iter());
         for v in routes.variants.iter() {
@@ -109,7 +101,7 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    println!("{} items", parsed_file.items.len());
+    println!("{} items", &parsed_file.items.len());
 
     println!("{} files will be created", files_to_create.len());
 
@@ -151,4 +143,60 @@ pub fn get_string_from_attribute(attribute_name: &str, attr: &Attribute) -> Resu
         _ => None,
     }
     .ok_or_else(|| Error::new_spanned(attr, &format!("expected #[{} = \"...\"]", attribute_name)))
+}
+
+fn find_routes(file: &syn::File) -> Option<ItemEnum> {
+    file.items.iter().find_map(|item| -> Option<ItemEnum> {
+        if let Item::Enum(found_enum) = item {
+            if found_enum.ident == "Routes" {
+                return Some(found_enum.clone());
+            }
+        }
+        None
+    })
+}
+
+fn find_model(file: &syn::File) -> Option<ItemStruct> {
+    file.items.iter().find_map(|item| -> Option<ItemStruct> {
+        if let Item::Struct(model_struct) = item {
+            if model_struct.ident == "Model" {
+                return Some(model_struct.clone());
+            }
+        }
+        None
+    })
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{
+        constants::{FILE_WITHOUT_MODEL, FILE_WITHOUT_ROUTES, FILE_WITH_ROUTES},
+        find_model, find_routes,
+    };
+
+    #[test]
+    fn test_find_routes() {
+        let parsed_file = syn::parse_file(FILE_WITH_ROUTES).unwrap();
+        let route = find_routes(&parsed_file);
+
+        assert_eq!(route.is_some(), true);
+
+        let parsed_file = syn::parse_file(FILE_WITHOUT_ROUTES).unwrap();
+        let route = find_routes(&parsed_file);
+
+        assert_eq!(route.is_some(), false)
+    }
+
+    #[test]
+    fn test_find_model() {
+        let parsed_file = syn::parse_file(FILE_WITH_ROUTES).unwrap();
+        let model = find_model(&parsed_file);
+
+        assert_eq!(model.is_some(), true);
+
+        let parsed_file = syn::parse_file(FILE_WITHOUT_MODEL).unwrap();
+        let model = find_model(&parsed_file);
+
+        assert_eq!(model.is_some(), false)
+    }
 }
