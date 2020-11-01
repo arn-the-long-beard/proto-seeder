@@ -1,4 +1,4 @@
-use crate::view::variant_view_path_tuple;
+use crate::{module::modules_path, view::variant_view_path_tuple};
 use indexmap::map::IndexMap;
 use syn::{export::ToTokens, Field, ItemEnum, ItemStruct};
 
@@ -12,18 +12,33 @@ pub struct SeedContent {
 }
 
 impl SeedContent {
+    pub fn local_views(&self) -> &IndexMap<String, (String, SeedRoute)> {
+        &self.local_views
+    }
+    pub fn guards(&self) -> &IndexMap<String, (String, SeedRoute)> {
+        &self.guards
+    }
+    pub fn directory(&self) -> &Option<String> {
+        &self.directory
+    }
+    pub fn modules(&self) -> &IndexMap<String, (SeedModule, SeedRoute)> {
+        &self.modules
+    }
+}
+
+impl SeedContent {
     pub fn new(routes_enum: ItemEnum, model: ItemStruct) -> Self {
         SeedContent {
-            local_views: get_local_view(routes_enum, model),
+            local_views: get_local_view(&routes_enum, model),
             guards: IndexMap::new(),
-            directory: None,
+            directory: modules_path(&routes_enum.attrs.iter()),
             modules: IndexMap::new(),
         }
     }
 }
 
 fn get_local_view(
-    routes_enum: ItemEnum,
+    routes_enum: &ItemEnum,
     model: ItemStruct,
 ) -> IndexMap<String, (String, SeedRoute)> {
     let mut map: IndexMap<String, (String, SeedRoute)> = IndexMap::new();
@@ -111,18 +126,18 @@ fn get_modules(item_enum: ItemEnum) -> IndexMap<String, (SeedModule, SeedRoute)>
 /// - update
 /// - view
 #[derive(Debug)]
-struct SeedModule {
+pub struct SeedModule {
     view: String,
     init: String,
 }
 #[derive(Debug, PartialEq)]
-struct SeedRoute {
-    name: String,
-    nested: bool,
-    children: bool,
-    id_param: bool,
-    query: bool,
-    content_to_load: String,
+pub struct SeedRoute {
+    pub name: String,
+    pub nested: bool,
+    pub children: bool,
+    pub id_param: bool,
+    pub query: bool,
+    pub content_to_load: String,
 }
 
 #[cfg(test)]
@@ -243,5 +258,15 @@ mod test {
             content.local_views.get("not_found").unwrap(),
             should_have.get("not_found").unwrap()
         );
+    }
+
+    #[test]
+    fn get_pages() {
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
+        let model = find_model(&parsed_file);
+        let routes_enum = find_routes(&parsed_file);
+
+        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap());
+        assert_eq!(content.directory.unwrap(), "pages");
     }
 }

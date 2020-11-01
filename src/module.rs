@@ -4,9 +4,9 @@ use crate::get_string_from_attribute;
 
 use syn::Attribute;
 
-pub fn modules_path(attrs: std::slice::Iter<'_, Attribute>) -> Option<String> {
+pub fn modules_path(attrs: &std::slice::Iter<'_, Attribute>) -> Option<String> {
     let mut attrs =
-        attrs.filter_map(
+        attrs.clone().filter_map(
             |attr| match get_string_from_attribute("modules_path", attr) {
                 Ok(op) => op,
                 Err(err) => abort!(Diagnostic::new(Level::Error, err.to_string())),
