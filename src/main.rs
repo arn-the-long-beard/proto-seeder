@@ -5,7 +5,7 @@ use convert_case::{Case, Casing};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{fs::File, io::Read, thread, time::Duration};
 use structopt::StructOpt;
-use syn::{Attribute, Error, Item, Lit, LitStr, Meta, MetaNameValue, Result};
+use syn::{Attribute, Error, Item, ItemEnum, Lit, LitStr, Meta, MetaNameValue, Result};
 
 mod module;
 mod view;
@@ -54,51 +54,58 @@ fn main() -> anyhow::Result<()> {
 
     let parsed_file = syn::parse_file(&src)?;
 
-    for a in parsed_file.items.iter() {
-        if let Item::Enum(found_enum) = a {
-            eprintln!("got enum {} ", found_enum.ident);
-
-            if found_enum.ident == "Routes" {
-                found_routes = Some(found_enum.ident.clone().to_string());
-                future_directory = modules_path(found_enum.attrs.iter());
-                for v in found_enum.variants.iter() {
-                    println!("routes => {}", v.ident);
-
-                    for f in v.fields.iter() {
-                        if let Some(i) = f.ident.as_ref() {
-                            println!(" specific_fields {}", &i);
-                        }
-                        // todo add nested tuple, struct and url payload
-                        // extractor so we re inject them into the files we
-                        // create no update
-                    }
-
-                    for a in v.attrs.iter() {
-                        println!("attributes {}", a.path.get_ident().unwrap());
-                    }
-                    if let Some(view) = variant_view_path_tuple(v.ident.clone(), v.attrs.iter()) {
-                        println!("The route will load local view");
-                        local_views_to_create.push(format!("pub fn {}", view.1))
-                    // new parser
-                    // here , reuse
-                    // code from macro
-                    // derive ?
-                    } else {
-                        println!("Got a module");
-                        files_to_create.push(v.ident.to_string().to_case(Case::Snake));
-                    }
-
-                    if let Some(guard) = variant_guard_path_tuple(v.ident.clone(), v.attrs.iter()) {
-                        println!("Got a guard");
-                        guards_to_create.push(format!("pub fn {}", guard.1));
-                    }
+    let enum_route = parsed_file
+        .items
+        .iter()
+        .find_map(|item| -> Option<ItemEnum> {
+            if let Item::Enum(found_enum) = item {
+                if found_enum.ident == "Routes" {
+                    return Some(found_enum.clone());
                 }
             }
-        }
-    }
+            None
+        });
+    pb.set_message("Searching for routes");
+    if let Some(routes) = enum_route {
+        eprintln!("got enum {} ", routes.ident);
+        found_routes = Some(routes.ident.to_string());
 
-    if found_routes.is_none() {
-        println!("No routes detected, so nothing will be created");
+        found_routes = Some(routes.ident.to_string());
+        future_directory = modules_path(routes.attrs.iter());
+        for v in routes.variants.iter() {
+            println!("routes => {}", v.ident);
+
+            for f in v.fields.iter() {
+                if let Some(i) = f.ident.as_ref() {
+                    println!(" specific_fields {}", &i);
+                }
+                // todo add nested tuple, struct and url payload
+                // extractor so we re inject them into the files we
+                // create no update
+            }
+
+            for a in v.attrs.iter() {
+                println!("attributes {}", a.path.get_ident().unwrap());
+            }
+            if let Some(view) = variant_view_path_tuple(v.ident.clone(), v.attrs.iter()) {
+                println!("The route will load local view");
+                local_views_to_create.push(format!("pub fn {}", view.1))
+            // new parser
+            // here , reuse
+            // code from macro
+            // derive ?
+            } else {
+                println!("Got a module");
+                files_to_create.push(v.ident.to_string().to_case(Case::Snake));
+            }
+
+            if let Some(guard) = variant_guard_path_tuple(v.ident.clone(), v.attrs.iter()) {
+                println!("Got a guard");
+                guards_to_create.push(format!("pub fn {}", guard.1));
+            }
+        }
+    } else {
+        pb.finish_with_message("No routes detected, so nothing will be created");
         return Ok(());
     }
 
