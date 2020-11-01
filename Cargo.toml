@@ -8,6 +8,8 @@ license = "MIT"
 #homepage = ""
 #documentation = ""
 readme = "README.md"
+
+exclude=["./examples"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
