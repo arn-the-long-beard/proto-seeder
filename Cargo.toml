@@ -4,12 +4,10 @@ description = "Cli to create files from Routes"
 version = "0.0.1"
 authors = ["arn-the-long-beard <arn.menant@gmail.com>"]
 edition = "2018"
-
 license = "MIT"
 #homepage = ""
 #documentation = ""
 readme = "README.md"
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -20,3 +18,4 @@ convert_case = "^0.4"
 proc-macro-error = "^1"
 proc-macro2 = "^1"
 indicatif = "0.15.0"
+indexmap = "1.6.0"
