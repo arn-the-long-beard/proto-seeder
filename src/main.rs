@@ -1,5 +1,4 @@
-use crate::{seed_content::SeedContent, writer::write_local_views};
-
+use crate::{content::SeedContent, writer::write_local_views};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
     fs::{File, OpenOptions},
@@ -11,8 +10,8 @@ use structopt::StructOpt;
 use syn::{Attribute, Error, Item, ItemEnum, ItemStruct, Lit, LitStr, Meta, MetaNameValue, Result};
 
 mod constants;
+mod content;
 mod module;
-mod seed_content;
 mod view;
 mod writer;
 /// Search for a pattern in a file and display the lines that contain it.
