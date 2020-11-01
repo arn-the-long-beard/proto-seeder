@@ -1,13 +1,17 @@
-use crate::{content::view::get_local_views, module::modules_path};
+use crate::{
+    content::{guard::get_guards, view::get_local_views},
+    module::modules_path,
+};
 use indexmap::map::IndexMap;
 use syn::{Field, ItemEnum, ItemStruct};
 
+mod guard;
 mod view;
 /// Routing Seed concept extracted from the parser
 #[derive(Debug)]
 pub struct SeedContent {
     local_views: IndexMap<String, (String, SeedRoute)>,
-    guards: IndexMap<String, (String, SeedRoute)>,
+    guards: IndexMap<String, (String, Vec<SeedRoute>)>,
     directory: Option<String>,
     modules: IndexMap<String, (SeedModule, SeedRoute)>,
 }
@@ -16,7 +20,7 @@ impl SeedContent {
     pub fn local_views(&self) -> &IndexMap<String, (String, SeedRoute)> {
         &self.local_views
     }
-    pub fn guards(&self) -> &IndexMap<String, (String, SeedRoute)> {
+    pub fn guards(&self) -> &IndexMap<String, (String, Vec<SeedRoute>)> {
         &self.guards
     }
     pub fn directory(&self) -> &Option<String> {
@@ -30,8 +34,8 @@ impl SeedContent {
 impl SeedContent {
     pub fn new(routes_enum: ItemEnum, model: ItemStruct) -> Self {
         SeedContent {
-            local_views: get_local_views(&routes_enum, model),
-            guards: IndexMap::new(),
+            local_views: get_local_views(&routes_enum, model.clone()),
+            guards: get_guards(&routes_enum, model.clone()),
             directory: modules_path(&routes_enum.attrs.iter()),
             modules: IndexMap::new(),
         }
@@ -44,10 +48,6 @@ fn get_scoped_field(scope: String, field: &&Field) -> bool {
     } else {
         false
     }
-}
-
-fn get_guards(item_enum: ItemEnum) -> IndexMap<String, String> {
-    IndexMap::new()
 }
 
 fn get_modules(item_enum: ItemEnum) -> IndexMap<String, (SeedModule, SeedRoute)> {

@@ -1,4 +1,7 @@
-use crate::{content::SeedContent, writer::write_local_views};
+use crate::{
+    content::SeedContent,
+    writer::{write_guards, write_local_views},
+};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
     fs::{File, OpenOptions},
@@ -76,13 +79,15 @@ fn main() -> anyhow::Result<()> {
             format!("creating local views on {}", &args.path.to_str().unwrap()).as_str(),
         );
 
-        let file = OpenOptions::new()
+        let mut file = OpenOptions::new()
             .write(true)
             .append(true)
             .open(&args.path)
             .unwrap_or_else(|_| panic!("Unable to update file , {}", &args.path.to_str().unwrap()));
 
-        write_local_views(seed_content.local_views().iter(), file, &pb);
+        write_local_views(seed_content.local_views().iter(), &file, &pb);
+
+        write_guards(seed_content.guards().iter(), &file, &pb);
 
         pb.set_message("Updating your files.");
         thread::sleep(Duration::from_secs(3));
