@@ -1,19 +1,27 @@
 use crate::{
-    content::{guard::get_guards, view::get_local_views},
+    content::{
+        guard::get_guards,
+        module::{get_modules, SeedModule},
+        view::get_local_views,
+    },
     parser::{module::modules_path, *},
 };
 use indexmap::map::IndexMap;
 use syn::{Field, ItemEnum, ItemStruct};
 
 mod guard;
+pub mod module;
 mod view;
+
 /// Routing Seed concept extracted from the parser
+/// This struct conains all thew views, guard, modules ( init ,views, update,
+/// Mdg, Model, Routes) for TEA
 #[derive(Debug)]
 pub struct SeedContent {
     local_views: IndexMap<String, (String, SeedRoute)>,
     guards: IndexMap<String, (String, Vec<SeedRoute>)>,
     directory: Option<String>,
-    modules: IndexMap<String, (SeedModule, SeedRoute)>,
+    modules: IndexMap<String, SeedModule>,
 }
 
 impl SeedContent {
@@ -26,7 +34,7 @@ impl SeedContent {
     pub fn directory(&self) -> &Option<String> {
         &self.directory
     }
-    pub fn modules(&self) -> &IndexMap<String, (SeedModule, SeedRoute)> {
+    pub fn modules(&self) -> &IndexMap<String, SeedModule> {
         &self.modules
     }
 }
@@ -37,7 +45,7 @@ impl SeedContent {
             local_views: get_local_views(&routes_enum, model.clone()),
             guards: get_guards(&routes_enum, model.clone()),
             directory: modules_path(&routes_enum.attrs.iter()),
-            modules: IndexMap::new(),
+            modules: get_modules(routes_enum),
         }
     }
 }
@@ -49,21 +57,8 @@ fn get_scoped_field(scope: String, field: &&Field) -> bool {
         false
     }
 }
-
-fn get_modules(item_enum: ItemEnum) -> IndexMap<String, (SeedModule, SeedRoute)> {
-    IndexMap::new()
-}
-/// Seed module that represent sometimes page or a global module
-/// TODO : in the future, should contain
-/// - init
-/// - update
-/// - view
-#[derive(Debug)]
-pub struct SeedModule {
-    view: String,
-    init: String,
-}
-#[derive(Debug, PartialEq)]
+/// todo maybe put field if guarded or not ?
+#[derive(Debug, PartialEq, Clone)]
 pub struct SeedRoute {
     pub name: String,
     pub nested: bool,

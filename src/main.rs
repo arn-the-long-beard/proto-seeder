@@ -1,7 +1,7 @@
 use crate::{
     content::SeedContent,
     parser::{find_model, find_routes},
-    writer::{guard::write_guards, view::write_local_views},
+    writer::{guard::write_guards, module::write_modules, view::write_local_views},
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
@@ -74,6 +74,29 @@ fn main() -> anyhow::Result<()> {
     } else if let Some(routes) = enum_route {
         let seed_content = SeedContent::new(routes, Option::unwrap(model));
 
+        pb.println(
+            format!(
+                "-> found {} locals view to create",
+                &seed_content.local_views().iter().len()
+            )
+            .as_str(),
+        );
+
+        pb.println(
+            format!(
+                "-> found {} guards to create",
+                &seed_content.guards().iter().len()
+            )
+            .as_str(),
+        );
+        pb.println(
+            format!(
+                "-> found {} modules to create",
+                &seed_content.modules().iter().len()
+            )
+            .as_str(),
+        );
+
         pb.println("[+] finished parsing the file");
 
         pb.set_message(
@@ -91,8 +114,14 @@ fn main() -> anyhow::Result<()> {
         write_guards(seed_content.guards().iter(), &file, &pb);
 
         pb.set_message("Updating your files.");
-        thread::sleep(Duration::from_secs(3));
-        pb.println("[+] Files updated"); // todo add files names
+
+        write_modules(
+            seed_content.modules().iter(),
+            seed_content.directory().clone(),
+            &pb,
+        );
+
+        // pb.println("[+] Files updated"); // todo add files names
 
         pb.set_message("Creating new files.");
         pb.println("[+] Files created"); // todo add files names

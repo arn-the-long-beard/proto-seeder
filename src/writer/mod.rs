@@ -1,6 +1,7 @@
 use std::{fs::File, io::Write};
 
 pub mod guard;
+pub mod module;
 pub mod view;
 
 /// Will just write /n for making a space

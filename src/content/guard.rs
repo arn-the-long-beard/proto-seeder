@@ -2,7 +2,6 @@ use crate::{
     content::{get_scoped_field, SeedRoute},
     parser::view::get_guard_attribute,
 };
-use convert_case::{Case, Casing};
 use indexmap::map::IndexMap;
 use syn::{export::ToTokens, ItemEnum, ItemStruct};
 
