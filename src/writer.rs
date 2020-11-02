@@ -22,6 +22,7 @@ pub fn write_local_views(
                 seed_route.name, view_name,
             ));
         }
+        write_space(file);
     }
 }
 pub fn write_guards(
