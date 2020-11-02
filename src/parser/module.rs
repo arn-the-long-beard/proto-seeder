@@ -1,7 +1,6 @@
 use proc_macro_error::{abort, Diagnostic, Level};
 
-use crate::get_string_from_attribute;
-
+use crate::parser::get_string_from_attribute;
 use syn::Attribute;
 
 pub fn modules_path(attrs: &std::slice::Iter<'_, Attribute>) -> Option<String> {

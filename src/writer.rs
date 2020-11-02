@@ -43,5 +43,12 @@ pub fn write_guards(
                 guard_name, guard_name
             ));
         }
+        write_space(file);
+    }
+}
+pub fn write_space(mut file: &File) {
+    let res = file.write_all("\n".to_string().as_ref());
+    if let Err(e) = res {
+        eprintln!("Could not write space  because {:?}", e);
     }
 }

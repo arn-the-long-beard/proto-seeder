@@ -1,6 +1,6 @@
 use crate::{
     content::{get_scoped_field, SeedRoute},
-    view::variant_guard_path_tuple,
+    parser::view::get_guard_attribute,
 };
 use convert_case::{Case, Casing};
 use indexmap::map::IndexMap;
@@ -13,8 +13,7 @@ pub fn get_guards(
     let mut map: IndexMap<String, (String, Vec<SeedRoute>)> = IndexMap::new();
 
     for v in routes_enum.variants.iter() {
-        if let Some((model_scope, guard, _)) =
-            variant_guard_path_tuple(v.ident.clone(), v.attrs.iter())
+        if let Some((model_scope, guard, _)) = get_guard_attribute(v.ident.clone(), v.attrs.iter())
         {
             let function_content = get_guard_function(model_scope.as_str(), guard.as_str(), &model);
 

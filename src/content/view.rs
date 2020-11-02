@@ -1,6 +1,6 @@
 use crate::{
     content::{get_scoped_field, SeedRoute},
-    view::variant_view_path_tuple,
+    parser::view::get_view_attribute,
 };
 use indexmap::map::IndexMap;
 use syn::{export::ToTokens, ItemEnum, ItemStruct};
@@ -12,8 +12,7 @@ pub fn get_local_views(
     let mut map: IndexMap<String, (String, SeedRoute)> = IndexMap::new();
 
     for v in routes_enum.variants.iter() {
-        if let Some((model_scope, view)) = variant_view_path_tuple(v.ident.clone(), v.attrs.iter())
-        {
+        if let Some((model_scope, view)) = get_view_attribute(v.ident.clone(), v.attrs.iter()) {
             let function_content = get_view_function(model_scope.as_str(), view.as_str(), &model);
             map.insert(
                 view,

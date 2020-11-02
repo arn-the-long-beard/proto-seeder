@@ -1,5 +1,6 @@
 use crate::{
     content::SeedContent,
+    parser::{find_model, find_routes},
     writer::{write_guards, write_local_views},
 };
 use indicatif::{ProgressBar, ProgressStyle};
@@ -10,24 +11,35 @@ use std::{
     time::Duration,
 };
 use structopt::StructOpt;
-use syn::{Attribute, Error, Item, ItemEnum, ItemStruct, Lit, LitStr, Meta, MetaNameValue, Result};
 
 mod constants;
 mod content;
-mod module;
-mod view;
+mod parser;
 mod writer;
-/// Search for a pattern in a file and display the lines that contain it.
+
+/// Generate code from the Routes enum from the given file
 #[derive(StructOpt, Debug)]
 struct Cli {
-    /// The pattern to look for
-    pattern: String,
+    /// Will parse the given file and generate view, guard and modules from the
+    /// routing
+    #[structopt(short, long)]
+    generate: bool,
+
+    ///Test debug mode
+    #[structopt(short, long)]
+    debug: bool,
     /// The path to the file to read
     #[structopt(parse(from_os_str))]
     path: std::path::PathBuf,
 }
 
 fn main() -> anyhow::Result<()> {
+    let args: Cli = Cli::from_args();
+
+    println!("arguments => {:?}", args);
+
+    if args.generate {}
+
     let pb = ProgressBar::new_spinner();
     pb.enable_steady_tick(120);
     pb.set_style(
@@ -46,21 +58,11 @@ fn main() -> anyhow::Result<()> {
             .template("{spinner:.blue} {msg}"),
     );
 
-    let args: Cli = Cli::from_args();
     let mut file = File::open(&args.path)
         .unwrap_or_else(|_| panic!("Unable to open file , {}", &args.path.to_str().unwrap()));
 
     let mut src = String::new();
     file.read_to_string(&mut src).expect("Unable to read file");
-
-    // let mut files_to_create: Vec<String> = vec![]; // each of them should be
-    // unique let mut local_views_to_create: Vec<String> = vec![]; // each of
-    // them should be unique let mut guards_to_create: Vec<String> = vec![]; //
-    // each of them should be unique let mut future_directory: Option<String> =
-    // None;
-    //
-    // let mut found_routes: Option<String> = None;
-
     let parsed_file = syn::parse_file(&src)?;
 
     pb.set_message("Searching for routes");
@@ -105,74 +107,4 @@ fn main() -> anyhow::Result<()> {
 
     Ok(())
     // todo add counting maybe ?
-}
-
-pub fn get_string_from_attribute(attribute_name: &str, attr: &Attribute) -> Result<Option<LitStr>> {
-    if !attr.path.is_ident(attribute_name) {
-        return Ok(None); // not our attribute
-    }
-    match attr.parse_meta()? {
-        Meta::NameValue(MetaNameValue {
-            lit: Lit::Str(name),
-            ..
-        }) => Some(Some(name)),
-        _ => None,
-    }
-    .ok_or_else(|| Error::new_spanned(attr, &format!("expected #[{} = \"...\"]", attribute_name)))
-}
-
-fn find_routes(file: &syn::File) -> Option<ItemEnum> {
-    file.items.iter().find_map(|item| -> Option<ItemEnum> {
-        if let Item::Enum(found_enum) = item {
-            if found_enum.ident == "Routes" {
-                return Some(found_enum.clone());
-            }
-        }
-        None
-    })
-}
-
-fn find_model(file: &syn::File) -> Option<ItemStruct> {
-    file.items.iter().find_map(|item| -> Option<ItemStruct> {
-        if let Item::Struct(model_struct) = item {
-            if model_struct.ident == "Model" {
-                return Some(model_struct.clone());
-            }
-        }
-        None
-    })
-}
-
-#[cfg(test)]
-mod test {
-    use crate::{
-        constants::{_FILE_WITHOUT_ROUTES_NOR_MODEL, _FILE_WITH_ROUTES_AND_MODEL},
-        find_model, find_routes,
-    };
-
-    #[test]
-    fn test_find_routes() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let route = find_routes(&parsed_file);
-
-        assert_eq!(route.is_some(), true);
-
-        let parsed_file = syn::parse_file(_FILE_WITHOUT_ROUTES_NOR_MODEL).unwrap();
-        let route = find_routes(&parsed_file);
-
-        assert_eq!(route.is_some(), false)
-    }
-
-    #[test]
-    fn test_find_model() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
-
-        assert_eq!(model.is_some(), true);
-
-        let parsed_file = syn::parse_file(_FILE_WITHOUT_ROUTES_NOR_MODEL).unwrap();
-        let model = find_model(&parsed_file);
-
-        assert_eq!(model.is_some(), false)
-    }
 }

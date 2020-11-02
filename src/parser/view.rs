@@ -1,11 +1,10 @@
 use proc_macro_error::{abort, Diagnostic, Level};
 
-use crate::get_string_from_attribute;
-
+use crate::parser::get_string_from_attribute;
 use syn::{Attribute, Ident};
 
 /// Get the content of #[view = model_prop => view_function]
-pub fn variant_view_path_tuple(
+pub fn get_view_attribute(
     _ident: Ident,
     attrs: std::slice::Iter<'_, Attribute>,
 ) -> Option<(String, String)> {
@@ -44,7 +43,7 @@ pub fn variant_view_path_tuple(
         Some((view_path.trim().to_string(), view_init.trim().to_string()))
     }
 }
-pub fn variant_guard_path_tuple(
+pub fn get_guard_attribute(
     _ident: Ident,
     attrs: std::slice::Iter<'_, Attribute>,
 ) -> Option<(String, String, String)> {

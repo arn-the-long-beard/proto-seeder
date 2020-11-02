@@ -1,6 +1,6 @@
 use crate::{
     content::{guard::get_guards, view::get_local_views},
-    module::modules_path,
+    parser::{module::modules_path, *},
 };
 use indexmap::map::IndexMap;
 use syn::{Field, ItemEnum, ItemStruct};
