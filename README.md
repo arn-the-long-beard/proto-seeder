@@ -51,7 +51,7 @@ After reading the file, the cli should :
 - Create the right file when route is module and create its view & init with the right payload extracted in step 2
 - Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]` -> Done
 - Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]` -> Done
-
+- Add build command to test that the generated code can compile
 
 
 For later
