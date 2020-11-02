@@ -3,15 +3,13 @@ use indexmap::map::IndexMap;
 mod constants;
 
 use crate::content::module::{
-    constants::{
-        _INIT_COMMENT, _MESSAGE_COMMENT, _MESSAGE_TEMPLATE, _MODEL_COMMENT, _MODEL_TEMPLATE,
-    },
+    constants::*,
     init::{
         get_init_for_init_struct_variant, get_init_for_tuple_variant, get_init_for_unit_variant,
     },
 };
 use convert_case::{Case, Casing};
-use syn::{Fields, ItemEnum, Variant};
+use syn::{Field, Fields, ItemEnum, Variant};
 
 mod init;
 
@@ -131,11 +129,28 @@ pub fn get_modules(routes_enum: ItemEnum) -> IndexMap<String, SeedModule> {
                 }
             };
 
+            let view = match fields {
+                Fields::Unit => _VIEW_TEMPLATE,
+                Fields::Unnamed(_) => _VIEW_TEMPLATE_WITH_ROUTES,
+                Fields::Named(fields) => {
+                    match fields
+                        .named
+                        .iter()
+                        .clone()
+                        .find(|f| f.ident.as_ref().unwrap() == "children")
+                    {
+                        None => _VIEW_TEMPLATE,
+                        Some(_) => _VIEW_TEMPLATE_WITH_ROUTES, // todo could extract type there
+                    }
+                }
+            };
+
             module
-                .set_init(format!("{} {}", _INIT_COMMENT, init))
                 .set_origin_route(Some(route.clone()))
+                .set_init(format!("{} {}", _INIT_COMMENT, init))
                 .set_model(format!("{} {}", _MODEL_COMMENT, _MODEL_TEMPLATE))
-                .set_msg(format!("{} {}", _MESSAGE_COMMENT, _MESSAGE_TEMPLATE));
+                .set_msg(format!("{} {}", _MESSAGE_COMMENT, _MESSAGE_TEMPLATE))
+                .set_view(format!("{} {}", _VIEW_COMMENT, view));
 
             map.insert(v.ident.clone().to_string().to_case(Case::Snake), module);
         }

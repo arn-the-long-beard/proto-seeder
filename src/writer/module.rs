@@ -119,6 +119,17 @@ pub fn write_modules(
                     file_path,
                 ));
             }
+
+            let res = file.write_all(format!("{}\n", module.view().to_string()).as_ref());
+            write_space(&file);
+            if let Err(e) = res {
+            } else {
+                pb.println(format!(
+                    "[+] created pub fn view() for module {} [ => ] in  {} ()",
+                    module.origin_route().as_ref().unwrap().name,
+                    file_path,
+                ));
+            }
         } else {
             pb.println(format!("Could not update the file {}", file_path.clone()).as_str());
         }
