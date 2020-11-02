@@ -1,49 +1,54 @@
-use crate::{
-    content::{module::SeedModule, SeedRoute},
-    writer::write_space,
-};
+use crate::{content::module::SeedModule, writer::write_space};
 use indexmap::map::Iter;
 use indicatif::ProgressBar;
 use std::{
     fs,
     fs::{File, OpenOptions},
     io::Write,
+    path::Path,
 };
 
 pub fn write_modules(
     seed_modules: Iter<String, SeedModule>,
     modules_path: Option<String>,
     pb: &ProgressBar,
+    current_path: &Path,
 ) {
     if let Some(p) = modules_path.clone() {
-        if let Ok(_) = fs::create_dir(p.clone()) {
-            pb.println(format!("[+] created folder {}", p).as_str());
+        let current_path_as_string = current_path.to_str().unwrap().to_string();
+        let p_string = format!("{}/{}", &current_path_as_string, p);
+        if let Ok(_) = fs::create_dir(p_string.clone()) {
+            pb.println(format!("[+] created folder {}", p_string).as_str());
 
-            if let Err(e) = File::create(format!("./{}/mod.rs", p)) {
-                pb.println(format!("[!] error {:?} when creating mod.rs at {} ", e, p).as_str());
+            if let Err(e) = File::create(format!("{}/mod.rs", p_string)) {
+                pb.println(
+                    format!("[!] error {:?} when creating mod.rs at {} ", e, p_string).as_str(),
+                );
             } else {
-                pb.println(format!("[+] created at mod.rs at {} ", p).as_str());
+                pb.println(format!("[+] created at mod.rs at {} ", p_string).as_str());
             }
         } else {
-            pb.println(format!("-> will use folder {}", p).as_str());
+            pb.println(format!("-> will use folder {}", p_string).as_str());
         }
     }
 
     for (module_name, module) in seed_modules {
         let mut is_new_file: bool = true;
         if let Some(parent_module_file) = modules_path.clone() {
-            if let Ok(mut file) = OpenOptions::new()
-                .write(true)
-                .append(true)
-                .open(format!("./{}/mod.rs", parent_module_file))
-            {
+            if let Ok(mut file) = OpenOptions::new().write(true).append(true).open(format!(
+                "./{}/{}/mod.rs",
+                current_path.to_str().unwrap(),
+                parent_module_file
+            )) {
                 let res = file.write_all(format!("pub mod {};\n", module_name).as_ref());
 
                 if let Err(e) = res {
                     pb.println(
                         format!(
-                            "[!] error {:?} while updating parent module ./{}/mod.rs",
-                            e, parent_module_file
+                            "[!] error {:?} while updating parent module {}/{}/mod.rs",
+                            e,
+                            current_path.to_str().unwrap(),
+                            parent_module_file
                         )
                         .as_str(),
                     );
@@ -62,9 +67,14 @@ pub fn write_modules(
         let mut file_to_create_or_update: Option<File> = None;
         // let create_folder: Option<String>;
         let file_path = if modules_path.clone().is_none() {
-            format!("{}.rs)", module_name)
+            format!("{}/{}.rs)", current_path.to_str().unwrap(), module_name,)
         } else {
-            format!("./{}/{}.rs", modules_path.clone().unwrap(), module_name)
+            format!(
+                "{}/{}/{}.rs",
+                current_path.to_str().unwrap(),
+                modules_path.clone().unwrap(),
+                module_name
+            )
         };
         let existing_file = OpenOptions::new()
             .write(true)

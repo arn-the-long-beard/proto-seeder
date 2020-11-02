@@ -109,6 +109,8 @@ fn main() -> anyhow::Result<()> {
             .open(&args.path)
             .unwrap_or_else(|_| panic!("Unable to update file , {}", &args.path.to_str().unwrap()));
 
+        let current_path = args.path.parent().unwrap();
+
         write_local_views(seed_content.local_views().iter(), &file, &pb);
 
         write_guards(seed_content.guards().iter(), &file, &pb);
@@ -119,6 +121,7 @@ fn main() -> anyhow::Result<()> {
             seed_content.modules().iter(),
             seed_content.directory().clone(),
             &pb,
+            current_path,
         );
 
         // pb.println("[+] Files updated"); // todo add files names
