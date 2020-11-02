@@ -1,7 +1,7 @@
 use crate::{
     content::SeedContent,
     parser::{find_model, find_routes},
-    writer::{write_guards, write_local_views},
+    writer::{guard::write_guards, view::write_local_views},
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
@@ -20,12 +20,13 @@ mod writer;
 /// Generate code from the Routes enum from the given file
 #[derive(StructOpt, Debug)]
 struct Cli {
-    /// Will parse the given file and generate view, guard and modules from the
-    /// routing
+    /// Will parse the given file and generate views, guards and modules from
+    /// the Routes enum in the given file
     #[structopt(short, long)]
     generate: bool,
 
     ///Test debug mode
+    /// For now this is dummy , we need to add log level later
     #[structopt(short, long)]
     debug: bool,
     /// The path to the file to read
@@ -35,8 +36,6 @@ struct Cli {
 
 fn main() -> anyhow::Result<()> {
     let args: Cli = Cli::from_args();
-
-    println!("arguments => {:?}", args);
 
     if args.generate {}
 
