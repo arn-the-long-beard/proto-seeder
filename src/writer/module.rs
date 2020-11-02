@@ -30,6 +30,7 @@ pub fn write_modules(
     }
 
     for (module_name, module) in seed_modules {
+        let mut is_new_file: bool = true;
         if let Some(parent_module_file) = modules_path.clone() {
             if let Ok(mut file) = OpenOptions::new()
                 .write(true)
@@ -73,6 +74,7 @@ pub fn write_modules(
         if existing_file.is_ok() {
             pb.println(format!("Found file to update  => {}", file_path).as_str());
             file_to_create_or_update = existing_file.ok();
+            is_new_file = false;
         } else {
             pb.println(format!("Will create new file => {}", file_path).as_str());
 
@@ -83,11 +85,27 @@ pub fn write_modules(
                 );
             } else {
                 file_to_create_or_update = create_file.ok();
+                is_new_file = true;
             }
         }
 
         if let Some(mut file) = file_to_create_or_update {
+            if is_new_file {
+                const IMPORT_SEED: &str = r###"use seed::{prelude::*, *};"###;
+                let res_import = file.write_all(format!("{}\n", IMPORT_SEED).as_ref());
+
+                if let Err(e) = res_import {
+                    pb.println(format!(
+                        "[!] could not write Seed import  for module {} [ => ] in  {}  because \
+                         {:?}",
+                        module.origin_route().as_ref().unwrap().name,
+                        file_path,
+                        e
+                    ));
+                }
+            }
             let res = file.write_all(format!("{}\n", module.init().to_string()).as_ref());
+
             write_space(&file);
             if let Err(e) = res {
             } else {
