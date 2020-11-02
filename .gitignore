@@ -16,6 +16,5 @@ Cargo.lock
 # macOS
 **/.DS_Store
 
+/examples/*
 /router_macro_derive/target
-/examples/backbone_app/pkg
-/examples/backbone_app/target
