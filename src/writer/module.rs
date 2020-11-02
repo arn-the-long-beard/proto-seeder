@@ -92,7 +92,29 @@ pub fn write_modules(
             if let Err(e) = res {
             } else {
                 pb.println(format!(
-                    "[+] created init for route {} [ => ] in  {} ()",
+                    "[+] created init for module {} [ => ] in  {} ()",
+                    module.origin_route().as_ref().unwrap().name,
+                    file_path,
+                ));
+            }
+
+            let res = file.write_all(format!("{}\n", module.model().to_string()).as_ref());
+            write_space(&file);
+            if let Err(e) = res {
+            } else {
+                pb.println(format!(
+                    "[+] created Model for module {} [ => ] in  {} ()",
+                    module.origin_route().as_ref().unwrap().name,
+                    file_path,
+                ));
+            }
+
+            let res = file.write_all(format!("{}\n", module.msg().to_string()).as_ref());
+            write_space(&file);
+            if let Err(e) = res {
+            } else {
+                pb.println(format!(
+                    "[+] created Message for module {} [ => ] in  {} ()",
                     module.origin_route().as_ref().unwrap().name,
                     file_path,
                 ));

@@ -2,13 +2,19 @@ use crate::{content::SeedRoute, parser::view::get_view_attribute};
 use indexmap::map::IndexMap;
 mod constants;
 
-use crate::content::module::init::{
-    get_init_for_init_struct_variant, get_init_for_tuple_variant, get_init_for_unit_variant,
+use crate::content::module::{
+    constants::{
+        _INIT_COMMENT, _MESSAGE_COMMENT, _MESSAGE_TEMPLATE, _MODEL_COMMENT, _MODEL_TEMPLATE,
+    },
+    init::{
+        get_init_for_init_struct_variant, get_init_for_tuple_variant, get_init_for_unit_variant,
+    },
 };
 use convert_case::{Case, Casing};
 use syn::{Fields, ItemEnum, Variant};
 
 mod init;
+
 /// Seed module that represent sometimes page or a global module
 /// TODO : in the future, should contain
 /// - init
@@ -125,7 +131,11 @@ pub fn get_modules(routes_enum: ItemEnum) -> IndexMap<String, SeedModule> {
                 }
             };
 
-            module.set_init(init).set_origin_route(Some(route.clone()));
+            module
+                .set_init(format!("{} {}", _INIT_COMMENT, init))
+                .set_origin_route(Some(route.clone()))
+                .set_model(format!("{} {}", _MODEL_COMMENT, _MODEL_TEMPLATE))
+                .set_msg(format!("{} {}", _MESSAGE_COMMENT, _MESSAGE_TEMPLATE));
 
             map.insert(v.ident.clone().to_string().to_case(Case::Snake), module);
         }

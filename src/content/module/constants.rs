@@ -64,6 +64,15 @@ pub enum Routes {
 "###;
 
 // -------------- INIT CONST ------------
+// ------ ------
+//     Init
+// ------ ------
+pub const _INIT_COMMENT: &str = r###"
+// ------ ------
+//     Init
+// ------ ------
+
+"###;
 
 pub const _SIMPLE_INIT_TEMPLATE: &str = r###"
  pub fn init(url:Url, previous_state: Model, orders: &mut impl Orders<Msg,> ) {
@@ -136,4 +145,34 @@ pub const _INIT_WITH_CHILDREN: &str = r###"
  pub fn init(url:Url, previous_state: Model, children: &Routes, orders: &mut impl Orders<Msg,> ) {
        log!("init for Login");
        }
+"###;
+
+// ------ ------
+//     Model
+// ------ ------
+
+pub const _MODEL_COMMENT: &str = r###"
+// ------ ------
+//     Model
+// ------ ------
+
+"###;
+
+pub const _MODEL_TEMPLATE: &str = r###"
+ pub struct Model {}
+"###;
+
+// ------ ------
+//     Message
+// ------ ------
+
+pub const _MESSAGE_COMMENT: &str = r###"
+// ------ ------
+//     Message
+// ------ ------
+
+"###;
+
+pub const _MESSAGE_TEMPLATE: &str = r###"
+ pub enum Message {}
 "###;

@@ -137,12 +137,16 @@ mod test {
         routes
     }
 
+    fn get_result(expected_template: &str) -> String {
+        format!("{} {}", _INIT_COMMENT, expected_template)
+    }
+
     #[test]
     fn write_init() {
         let map: IndexMap<String, SeedModule> = get_modules(get_routes(_SIMPLE_ROUTE));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _SIMPLE_INIT;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -161,7 +165,7 @@ mod test {
         let map: IndexMap<String, SeedModule> = get_modules(get_routes(_ROUTE_WITH_NESTED));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_NESTED;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -180,7 +184,7 @@ mod test {
         let map: IndexMap<String, SeedModule> = get_modules(get_routes(_ROUTE_WITH_ID_PARAM));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_ID_PARAM;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -199,7 +203,7 @@ mod test {
             get_modules(get_routes(_ROUTE_WITH_ID_PARAM_AND_QUERY));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_ID_PARAM_AND_QUERY;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -218,7 +222,7 @@ mod test {
             get_modules(get_routes(_ROUTE_WITH_ID_PARAM_AND_QUERY_AND_CHILDREN));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_ID_PARAM_AND_QUERY_AND_CHILDREN;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -237,7 +241,7 @@ mod test {
             get_modules(get_routes(_ROUTE_WITH_ID_PARAM_AND_CHILDREN));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_ID_PARAM_AND_CHILDREN;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -255,7 +259,7 @@ mod test {
         let map: IndexMap<String, SeedModule> = get_modules(get_routes(_ROUTE_WITH_QUERY));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_QUERY;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -274,7 +278,7 @@ mod test {
             get_modules(get_routes(_ROUTE_WITH_QUERY_AND_CHILDREN));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_QUERY_AND_CHILDREN;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
@@ -293,7 +297,7 @@ mod test {
         let map: IndexMap<String, SeedModule> = get_modules(get_routes(_ROUTE_WITH_CHILDREN));
         let result: &SeedModule = map.get("login").unwrap();
         let should_have = _INIT_WITH_CHILDREN;
-        assert_eq!(result.init(), should_have);
+        assert_eq!(result.init(), get_result(should_have));
         assert_eq!(
             result.origin_route().as_ref().unwrap().clone(),
             SeedRoute {
