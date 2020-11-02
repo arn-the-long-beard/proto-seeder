@@ -52,7 +52,7 @@ After reading the file, the cli should :
 - Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]` -> Done
 - Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]` -> Done
 - Add build command to test that the generated code can compile
-
+- Add module in root file where the initial Routes is parsed
 
 For later
 - Detect if future file already exist -> Done
