@@ -123,13 +123,8 @@ fn main() -> anyhow::Result<()> {
             &pb,
             current_path,
         );
-
-        // pb.println("[+] Files updated"); // todo add files names
-
         pb.set_message("Creating new files.");
-        pb.println("[+] Files created"); // todo add files names
-        thread::sleep(Duration::from_secs(3));
-
+        pb.println("[+] Files created");
         pb.finish_with_message("Done");
     } else {
         pb.finish_with_message("No routes detected, so nothing will be created");
