@@ -1,10 +1,11 @@
 use crate::{
     content::SeedContent,
     parser::{find_model, find_routes},
-    writer::{guard::write_guards, module::write_modules, view::write_local_views},
+    writer::{guard::write_guards, module::ModulesWriter, view::write_local_views},
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
+    borrow::Borrow,
     fs::{File, OpenOptions},
     io::Read,
     thread,
@@ -117,17 +118,32 @@ fn main() -> anyhow::Result<()> {
 
         pb.set_message("Updating your files.");
 
-        write_modules(
-            seed_content.modules().iter(),
-            seed_content.directory().clone(),
-            &pb,
-            current_path,
-            &args.path,
+        let mut writer = ModulesWriter::new(
+            seed_content,
+            pb,
+            current_path
+                .to_str()
+                .expect("should get string of current path")
+                .to_string(),
+            args.path
+                .to_str()
+                .expect("should get string of target file")
+                .to_string(),
         );
 
-        pb.set_message("Creating new files.");
-        pb.println("[+] Files created");
-        pb.finish_with_message("Done");
+        writer.run();
+
+        // write_modules(
+        //     seed_content.modules().iter(),
+        //     seed_content.directory().clone(),
+        //     &pb,
+        //     current_path,
+        //     &args.path,
+        // );
+
+        writer.pb.set_message("Creating new files.");
+        writer.pb.println("[+] Files created");
+        writer.pb.finish_with_message("Done");
     } else {
         pb.finish_with_message("No routes detected, so nothing will be created");
         return Ok(());

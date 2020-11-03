@@ -89,4 +89,3 @@ fn init(url: Url, orders: &mut impl Orders<Msg,>,) -> Model {
     }
 }
  "###;
-
