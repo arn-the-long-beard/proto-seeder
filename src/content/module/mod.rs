@@ -26,35 +26,35 @@ pub struct SeedModule {
     model: String,
     msg: String,
     routes: String,
-    origin_route: Option<SeedRoute,>,
+    origin_route: Option<SeedRoute>,
 }
 
 impl SeedModule {
-    pub fn view(&self,) -> &str {
+    pub fn view(&self) -> &str {
         &self.view
     }
 
-    pub fn init(&self,) -> &str {
+    pub fn init(&self) -> &str {
         &self.init
     }
 
-    pub fn update(&self,) -> &str {
+    pub fn update(&self) -> &str {
         &self.update
     }
 
-    pub fn model(&self,) -> &str {
+    pub fn model(&self) -> &str {
         &self.model
     }
 
-    pub fn msg(&self,) -> &str {
+    pub fn msg(&self) -> &str {
         &self.msg
     }
 
-    pub fn routes(&self,) -> &str {
+    pub fn routes(&self) -> &str {
         &self.routes
     }
 
-    pub fn origin_route(&self,) -> &Option<SeedRoute,> {
+    pub fn origin_route(&self) -> &Option<SeedRoute> {
         &self.origin_route
     }
 }
@@ -75,45 +75,45 @@ impl SeedModule {
     }
 
     /// Set the view, replace if any
-    pub fn set_view(&mut self, view_function: String,) -> &mut SeedModule {
+    pub fn set_view(&mut self, view_function: String) -> &mut SeedModule {
         self.view = view_function;
         self
     }
 
     //// set the init , replace if any
-    pub fn set_init(&mut self, init_function: String,) -> &mut SeedModule {
+    pub fn set_init(&mut self, init_function: String) -> &mut SeedModule {
         self.init = init_function;
         self
     }
 
     //// set the Updat,e replace if any
-    pub fn set_update(&mut self, update_function: String,) -> &mut SeedModule {
+    pub fn set_update(&mut self, update_function: String) -> &mut SeedModule {
         self.update = update_function;
         self
     }
 
-    pub fn set_model(&mut self, model: String,) -> &mut SeedModule {
+    pub fn set_model(&mut self, model: String) -> &mut SeedModule {
         self.model = model;
         self
     }
 
-    pub fn set_msg(&mut self, msg: String,) -> &mut SeedModule {
+    pub fn set_msg(&mut self, msg: String) -> &mut SeedModule {
         self.msg = msg;
         self
     }
 
-    pub fn set_routes(&mut self, routes: String,) -> &mut SeedModule {
+    pub fn set_routes(&mut self, routes: String) -> &mut SeedModule {
         self.routes = routes;
         self
     }
 
-    pub fn set_origin_route(&mut self, origin_route: Option<SeedRoute,>,) -> &mut SeedModule {
+    pub fn set_origin_route(&mut self, origin_route: Option<SeedRoute>) -> &mut SeedModule {
         self.origin_route = origin_route;
         self
     }
 }
-pub fn get_modules(routes_enum: ItemEnum,) -> IndexMap<String, SeedModule,> {
-    let mut map: IndexMap<String, SeedModule,> = IndexMap::new();
+pub fn get_modules(routes_enum: ItemEnum) -> IndexMap<String, SeedModule> {
+    let mut map: IndexMap<String, SeedModule> = IndexMap::new();
     for v in routes_enum.variants.iter() {
         let Variant {
             attrs,
@@ -122,45 +122,46 @@ pub fn get_modules(routes_enum: ItemEnum,) -> IndexMap<String, SeedModule,> {
             ..
         } = v;
 
-        if let Some(_,) = get_view_attribute(v.ident.clone(), v.attrs.iter(),) {
+        if let Some(_) = get_view_attribute(v.ident.clone(), v.attrs.iter()) {
         } else {
             let mut module = SeedModule::new();
 
-            let (init, route,) = match fields {
-                Fields::Unit => get_init_for_unit_variant(ident.clone(),),
-                Fields::Unnamed(fields,) => {
-                    get_init_for_tuple_variant(ident.clone(), fields.unnamed.iter(),)
-                },
-                Fields::Named(fields,) => {
-                    get_init_for_init_struct_variant(ident.clone(), fields.named.iter(),)
-                },
+            let (init, route) = match fields {
+                Fields::Unit => get_init_for_unit_variant(ident.clone()),
+                Fields::Unnamed(fields) => {
+                    get_init_for_tuple_variant(ident.clone(), fields.unnamed.iter())
+                }
+                Fields::Named(fields) => {
+                    get_init_for_init_struct_variant(ident.clone(), fields.named.iter())
+                }
             };
 
             let view = match fields {
                 Fields::Unit => _VIEW_TEMPLATE,
-                Fields::Unnamed(_,) => _VIEW_TEMPLATE_WITH_ROUTES,
-                Fields::Named(fields,) => {
+                Fields::Unnamed(_) => _VIEW_TEMPLATE_WITH_ROUTES,
+                Fields::Named(fields) => {
                     match fields
                         .named
                         .iter()
                         .clone()
-                        .find(|f| f.ident.as_ref().unwrap() == "children",)
+                        .find(|f| f.ident.as_ref().unwrap() == "children")
                     {
                         None => _VIEW_TEMPLATE,
-                        Some(_,) => _VIEW_TEMPLATE_WITH_ROUTES, // todo could extract type there
+                        Some(_) => _VIEW_TEMPLATE_WITH_ROUTES, // todo could extract type there
                     }
-                },
+                }
             };
 
             module
-                .set_origin_route(Some(route.clone(),),)
-                .set_init(format!("{} {}", _INIT_COMMENT, init),)
-                .set_model(format!("{} {}", _MODEL_COMMENT, _MODEL_TEMPLATE),)
-                .set_msg(format!("{} {}", _MESSAGE_COMMENT, _MESSAGE_TEMPLATE),)
-                .set_view(format!("{} {}", _VIEW_COMMENT, view),)
-                .set_routes(format!("{} {}", _ROUTES_COMMENT, _ROUTES_TEMPLATE),);
+                .set_origin_route(Some(route.clone()))
+                .set_init(format!("{} {}", _INIT_COMMENT, init))
+                .set_model(format!("{} {}", _MODEL_COMMENT, _MODEL_TEMPLATE))
+                .set_msg(format!("{} {}", _MESSAGE_COMMENT, _MESSAGE_TEMPLATE))
+                .set_update(format!("{} {}", _UPDATE_COMMENT, _UPDATE_TEMPLATE))
+                .set_view(format!("{} {}", _VIEW_COMMENT, view))
+                .set_routes(format!("{} {}", _ROUTES_COMMENT, _ROUTES_TEMPLATE));
 
-            map.insert(v.ident.clone().to_string().to_case(Case::Snake,), module,);
+            map.insert(v.ident.clone().to_string().to_case(Case::Snake), module);
         }
     }
     map

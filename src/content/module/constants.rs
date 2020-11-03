@@ -178,7 +178,25 @@ pub const _MESSAGE_TEMPLATE: &str = r###"
 "###;
 
 // ------ ------
-//     Message
+//     Update
+// ------ ------
+
+pub const _UPDATE_COMMENT: &str = r###"
+// ------ ------
+//     UPDAYE
+// ------ ------
+
+"###;
+
+pub const _UPDATE_TEMPLATE: &str = r###"
+fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg,>,)
+{
+
+}
+"###;
+
+// ------ ------
+//     View
 // ------ ------
 
 pub const _VIEW_COMMENT: &str = r###"
