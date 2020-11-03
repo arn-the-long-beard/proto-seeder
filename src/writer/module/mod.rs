@@ -13,6 +13,7 @@ pub fn write_modules(
     modules_path: Option<String>,
     pb: &ProgressBar,
     current_path: &Path,
+    root_file_path: &Path,
 ) {
     if let Some(p) = modules_path.clone() {
         let current_path_as_string = current_path.to_str().unwrap().to_string();
@@ -25,7 +26,39 @@ pub fn write_modules(
                     format!("[!] error {:?} when creating mod.rs at {} ", e, p_string).as_str(),
                 );
             } else {
-                pb.println(format!("[+] created at mod.rs at {} ", p_string).as_str());
+                pb.println(format!("[+] created mod.rs at {} ", p_string).as_str());
+
+                let mut file = OpenOptions::new()
+                    .write(true)
+                    .append(true)
+                    .open(&root_file_path)
+                    .unwrap_or_else(|_| {
+                        panic!(
+                            "Unable to update file , {}",
+                            &root_file_path.to_str().unwrap()
+                        )
+                    });
+
+                if let Err(e) =
+                    file.write_all(format!(" mod {};\n", modules_path.clone().unwrap()).as_ref())
+                {
+                    pb.println(
+                        format!(
+                            "[!] error {:?} when importing module at {} ",
+                            e,
+                            &root_file_path.to_str().unwrap()
+                        )
+                        .as_str(),
+                    );
+                } else {
+                    pb.println(
+                        format!(
+                            "[+] added mod.rs import at  {} ",
+                            &root_file_path.to_str().unwrap()
+                        )
+                        .as_str(),
+                    );
+                }
             }
         } else {
             pb.println(format!("-> will use folder {}", p_string).as_str());
@@ -40,7 +73,7 @@ pub fn write_modules(
                 current_path.to_str().unwrap(),
                 parent_module_file
             )) {
-                let res = file.write_all(format!("pub mod {};\n", module_name).as_ref());
+                let res = file.write_all(format!("pub mod {}", module_name).as_ref());
 
                 if let Err(e) = res {
                     pb.println(
@@ -50,7 +83,7 @@ pub fn write_modules(
                             current_path.to_str().unwrap(),
                             parent_module_file
                         )
-                            .as_str(),
+                        .as_str(),
                     );
                 }
             } else {
@@ -59,7 +92,39 @@ pub fn write_modules(
                         "[!] error while updating parent module {}",
                         parent_module_file
                     )
-                        .as_str(),
+                    .as_str(),
+                );
+            }
+        } else {
+            let mut file = OpenOptions::new()
+                .write(true)
+                .append(true)
+                .open(&root_file_path)
+                .unwrap_or_else(|_| {
+                    panic!(
+                        "Unable to update file , {}",
+                        &root_file_path.to_str().unwrap()
+                    )
+                });
+
+            if let Err(e) = file.write_all(format!("mod {}; \n ", module_name.clone()).as_ref()) {
+                pb.println(
+                    format!(
+                        "[!] error {:?} while importing module {} at {} ",
+                        e,
+                        module_name,
+                        &root_file_path.to_str().unwrap()
+                    )
+                    .as_str(),
+                );
+            } else {
+                pb.println(
+                    format!(
+                        "[+] added {}.rs import at  {} ",
+                        module_name,
+                        &root_file_path.to_str().unwrap()
+                    )
+                    .as_str(),
                 );
             }
         }
@@ -67,7 +132,7 @@ pub fn write_modules(
         let mut file_to_create_or_update: Option<File> = None;
         // let create_folder: Option<String>;
         let file_path = if modules_path.clone().is_none() {
-            format!("{}/{}.rs)", current_path.to_str().unwrap(), module_name,)
+            format!("{}/{}.rs", current_path.to_str().unwrap(), module_name,)
         } else {
             format!(
                 "{}/{}/{}.rs",

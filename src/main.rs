@@ -122,7 +122,9 @@ fn main() -> anyhow::Result<()> {
             seed_content.directory().clone(),
             &pb,
             current_path,
+            &args.path,
         );
+
         pb.set_message("Creating new files.");
         pb.println("[+] Files created");
         pb.finish_with_message("Done");
