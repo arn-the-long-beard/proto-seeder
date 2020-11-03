@@ -356,9 +356,3 @@ fn make_query() -> IndexMap<String, String> {
 pub fn start() {
     App::start("app", init, update, view);
 }
-fn not_found(model : &Model) -> Node<Msg>{div!["not_found"]}
-fn forbidden(model : &Model) -> Node<Msg>{div!["forbidden"]}
-fn home(theme : &Theme) -> Node<Msg>{div!["home"]}
-fn not_found(model : &Model) -> Node<Msg>{div!["not_found"]}
-fn forbidden(model : &Model) -> Node<Msg>{div!["forbidden"]}
-fn home(theme : &Theme) -> Node<Msg>{div!["home"]}

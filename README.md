@@ -57,3 +57,4 @@ After reading the file, the cli should :
 For later
 - Detect if future file already exist -> Done
 - If future file already exist, try to apply the command line recursively to its Routes enum?
+- Check if content already exist, then it will not add it
