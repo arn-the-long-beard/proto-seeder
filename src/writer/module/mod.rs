@@ -183,13 +183,44 @@ impl ModulesWriter {
         }
         self
     }
+
+    fn update_imports(&mut self, src: &str, mod_file_path: &str, module_name: &str) {
+        let parsed_file = syn::parse_file(&src).expect("Should read content for file ");
+
+        if let Some(m) = find_mod(&parsed_file, module_name) {
+            self.log_info(
+                format!(
+                    "No need to update imports on {} for {}",
+                    &mod_file_path, m.ident
+                )
+                .as_str(),
+            );
+        } else {
+            self.write_on_file_with_custom_message(
+                mod_file_path,
+                format!("pub mod {} ;\n", module_name).as_str(),
+                "adding import",
+            );
+        }
+    }
+
+    fn create_imports(&mut self, mod_file_path: &str, module_name: &str) {
+        self.log_info("Creating new imports");
+        self.write_on_file(
+            mod_file_path,
+            format!("pub mod {} ;\n", module_name).as_str(),
+        );
+    }
+    fn get_target_file(&self) -> File {
+        ModulesWriter::open_file(&self.root_file_path).expect("Should have opened target file")
+    }
     /// create parent module if needed and then create sub modules with their
     /// content
     pub fn run(&mut self) -> &mut Self {
         let mut mod_file_path: Option<String> = None;
 
-        if let Some(parent_module_path) = &self.content.directory().clone() {
-            if parent_module_path.contains('/') {
+        if let Some(parent_module_path_or_name) = &self.content.directory().clone() {
+            if parent_module_path_or_name.contains('/') {
                 self.log_error("Does not support multiple directory for now");
                 return self;
             }
@@ -197,16 +228,24 @@ impl ModulesWriter {
             let root_path = &self.current_path; //my_app
             let root_file_path: String = String::from(&self.root_file_path); //my_app/lib.rs
 
-            let new_folder_path: String = format!("{}/{}", &root_path, parent_module_path.clone()); //my_app/pages
+            let new_folder_path: String =
+                format!("{}/{}", &root_path, parent_module_path_or_name.clone()); //my_app/pages
             mod_file_path = Some(format!("{}/mod.rs", &new_folder_path)); //my_app/pages/mod.rs
 
             self.create_folder(&new_folder_path)
                 .create_or_update_file(mod_file_path.clone().unwrap())
-                .open_file_with_panic(&root_file_path)
-                .write_on_file(
-                    &root_file_path,
-                    format!("mod {}; ", parent_module_path.clone()).as_str(),
-                );
+                .open_file_with_panic(&root_file_path);
+
+            let mut src = String::new();
+            let read = self.get_target_file().read_to_string(&mut src);
+            if read.is_err() {
+                self.log_error(format!("Should read file for  {}", &root_file_path).as_str());
+                self.log_error(format!("{:?}", read.unwrap_err()).as_str());
+            } else {
+                self.update_imports(&src, &root_file_path, parent_module_path_or_name);
+            }
+        } else {
+            self.open_file_with_panic(&self.root_file_path.clone());
         }
 
         for (module_name, module) in self.content.modules().clone() {
@@ -218,17 +257,46 @@ impl ModulesWriter {
                     &self.content.directory().clone().unwrap(),
                     module_name
                 ));
-                self.write_on_file(
-                    mod_file.clone().as_str(),
-                    format!("pub mod {} ;\n", module_name).as_str(),
-                );
+
+                let (op, f) = self
+                    .files
+                    .get_mut(&mod_file_path.clone().unwrap().to_string())
+                    .unwrap();
+
+                match op {
+                    FileOperation::Update => {
+                        let mut src = String::new();
+                        let read = ModulesWriter::open_file(&mod_file)
+                            .expect("should have opened mod.rs")
+                            .read_to_string(&mut src);
+
+                        if read.is_err() {
+                            self.log_error(format!("Should read file for  {}", &mod_file).as_str());
+                            self.log_error(format!("{:?}", read.unwrap_err()).as_str());
+                        } else {
+                            self.update_imports(&src, &mod_file, &module_name);
+                        }
+                    }
+
+                    FileOperation::Create => {
+                        self.create_imports(&mod_file, &module_name);
+                    }
+                }
             } else {
                 file_path = Some(format!("{}/{}.rs", &self.current_path.clone(), module_name));
-                let p = &self.root_file_path.clone().to_string();
-                self.open_file_with_panic(&p.clone()).write_on_file(
-                    p.clone().as_str(),
-                    format!("pub mod {} ;\n", module_name).as_str(),
-                );
+                let mut src = String::new();
+                let read = self.get_target_file().read_to_string(&mut src);
+                if read.is_err() {
+                    self.log_error(
+                        format!(
+                            "Should read file for  {}",
+                            &file_path.clone().unwrap().to_string()
+                        )
+                        .as_str(),
+                    );
+                    self.log_error(format!("{:?}", read.unwrap_err()).as_str());
+                }
+                self.update_imports(&src, &self.root_file_path.clone().to_string(), &module_name);
             }
 
             if let Some(path) = file_path {

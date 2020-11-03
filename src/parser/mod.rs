@@ -1,5 +1,6 @@
 use syn::{
-    Attribute, Error, Item, ItemEnum, ItemFn, ItemStruct, Lit, LitStr, Meta, MetaNameValue, Result,
+    Attribute, Error, Item, ItemEnum, ItemFn, ItemMod, ItemStruct, Lit, LitStr, Meta,
+    MetaNameValue, Result,
 };
 
 pub mod module;
@@ -61,6 +62,20 @@ pub fn find_message(file: &syn::File) -> Option<ItemEnum> {
         }
         None
     })
+}
+
+pub fn find_mod(file: &syn::File, name: &str) -> Option<ItemMod> {
+    file.items
+        .clone()
+        .iter()
+        .find_map(|item| -> Option<ItemMod> {
+            if let Item::Mod(found_mod) = item {
+                if found_mod.ident == name {
+                    return Some(found_mod.clone());
+                }
+            }
+            None
+        })
 }
 
 #[cfg(test)]
