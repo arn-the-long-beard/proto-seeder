@@ -1,10 +1,13 @@
-use crate::content::SeedContent;
+use crate::{
+    content::{module::SeedModule, SeedContent},
+    parser::*,
+};
 use indexmap::map::IndexMap;
 use indicatif::ProgressBar;
 use std::{
     fs,
     fs::{File, OpenOptions},
-    io::Write,
+    io::{Read, Write},
 };
 
 // /// Specific options gotten from the command line
@@ -80,6 +83,7 @@ impl ModulesWriter {
     fn open_file_with_panic(&mut self, path: &str) -> &mut Self {
         let file = OpenOptions::new()
             .write(true)
+            .read(true)
             .append(true)
             .open(path)
             .unwrap_or_else(|_| panic!("Unable to update file , {}", path));
@@ -90,7 +94,11 @@ impl ModulesWriter {
 
     /// Standard open file to write and happen code ot it
     fn open_file(path: &str) -> std::io::Result<File> {
-        OpenOptions::new().write(true).append(true).open(path)
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .append(true)
+            .open(path)
     }
 
     /// Write on the file for given path and content
@@ -169,7 +177,7 @@ impl ModulesWriter {
     fn create_or_update_file(&mut self, path: String) -> &mut Self {
         if let Ok(f) = ModulesWriter::open_file(path.as_str()) {
             self.files.insert(path.clone(), (FileOperation::Update, f));
-            self.log_ok(format!("found file at {} ", path).as_str())
+            self.log_ok(format!("found file to update at {} ", path).as_str())
         } else {
             self.create_file(path);
         }
@@ -230,47 +238,87 @@ impl ModulesWriter {
                     None => {}
                     Some((operation, _)) => {
                         if operation.clone().eq(&FileOperation::Create) {
-                            const IMPORT_SEED: &str = r###"use seed::{prelude::*, *};"###;
-                            self.write_on_file(
-                                path.clone().as_str(),
-                                format!("{}\n", IMPORT_SEED).as_str(),
-                            );
+                            self.insert_content(&path, module);
+                        } else if operation.clone().eq(&FileOperation::Update) {
+                            self.update_content_if_needed(&path, module);
                         }
-                        self.write_on_file_with_custom_message(
-                            &path,
-                            module.init(),
-                            "adding pub fn init()",
-                        )
-                        .write_on_file_with_custom_message(
-                            &path,
-                            module.model(),
-                            "adding pub struct Model{}",
-                        )
-                        .write_on_file_with_custom_message(
-                            &path,
-                            module.routes(),
-                            "adding pub enum Routes{} ",
-                        )
-                        .write_on_file_with_custom_message(
-                            &path,
-                            module.msg(),
-                            "adding pub enum Msg{}",
-                        )
-                        .write_on_file_with_custom_message(
-                            &path,
-                            module.update(),
-                            "adding pub fn update()",
-                        )
-                        .write_on_file_with_custom_message(
-                            &path,
-                            module.view(),
-                            "adding pub fn view()",
-                        );
                     }
                 }
             }
         }
         self
+    }
+
+    fn insert_content(&mut self, path: &str, module: SeedModule) {
+        const IMPORT_SEED: &str = r###"use seed::{prelude::*, *};"###;
+        self.write_on_file(&path, format!("{}\n", IMPORT_SEED).as_str())
+            .write_on_file_with_custom_message(&path, module.init(), "adding pub fn init()")
+            .write_on_file_with_custom_message(&path, module.model(), "adding pub struct Model{}")
+            .write_on_file_with_custom_message(&path, module.routes(), "adding pub enum Routes{} ")
+            .write_on_file_with_custom_message(&path, module.msg(), "adding pub enum Msg{}")
+            .write_on_file_with_custom_message(&path, module.update(), "adding pub fn update()")
+            .write_on_file_with_custom_message(&path, module.view(), "adding pub fn view()");
+    }
+
+    fn update_content_if_needed(&mut self, path: &str, module: SeedModule) {
+        let (_, f) = self.files.get_mut(&path.to_string()).unwrap();
+        let mut src = String::new();
+
+        let read = f.read_to_string(&mut src);
+
+        if read.is_err() {
+            self.log_error(format!("Should read file for  {}", &path).as_str());
+            self.log_error(format!("{:?}", read.unwrap_err()).as_str());
+            return;
+        }
+        let parsed_file = syn::parse_file(&src).expect("Should read content for file ");
+
+        if let Some(f) = find_function(&parsed_file, "init") {
+            self.log_info(format!(" file already has {}", f.sig.ident.to_string()).as_str());
+        } else {
+            self.write_on_file_with_custom_message(&path, module.init(), "adding pub fn init()");
+        }
+
+        if let Some(m) = find_model(&parsed_file) {
+            self.log_info(format!(" file already has {}", m.ident.to_string()).as_str());
+        } else {
+            self.write_on_file_with_custom_message(
+                &path,
+                module.model(),
+                "adding pub struct Model{}",
+            );
+        }
+
+        if let Some(r) = find_routes(&parsed_file) {
+            self.log_info(format!(" file already has {}", r.ident.to_string()).as_str());
+        } else {
+            self.write_on_file_with_custom_message(
+                &path,
+                module.routes(),
+                "adding pub enum Routes{} ",
+            );
+        }
+
+        if let Some(msg) = find_message(&parsed_file) {
+            self.log_info(format!(" file already has {}", msg.ident.to_string()).as_str());
+        } else {
+            self.write_on_file_with_custom_message(&path, module.msg(), "adding pub enum Msg{}");
+        }
+        if let Some(update) = find_function(&parsed_file, "update") {
+            self.log_info(format!(" file already has {}", update.sig.ident.to_string()).as_str());
+        } else {
+            self.write_on_file_with_custom_message(
+                &path,
+                module.update(),
+                "adding pub fn update()",
+            );
+        }
+
+        if let Some(view) = find_function(&parsed_file, "view") {
+            self.log_info(format!(" file already has {}", view.sig.ident.to_string()).as_str());
+        } else {
+            self.write_on_file_with_custom_message(&path, module.view(), "adding pub fn view()");
+        }
     }
 
     /// Log success in progress bar
