@@ -156,8 +156,8 @@ impl ModulesWriter {
         match File::create(path.clone()) {
             Ok(file) => {
                 self.files
-                    .insert(path.clone(), (FileOperation::Update, file));
-                self.log_ok(format!("created file  at {} ", path).as_str());
+                    .insert(path.clone(), (FileOperation::Create, file));
+                self.log_ok(format!("created file at {} ", path).as_str());
             }
             Err(e) => {
                 self.log_error(format!("error {:?} when creating file at {} ", e, path).as_str());
@@ -165,7 +165,16 @@ impl ModulesWriter {
         }
         self
     }
-
+    /// Create a new file and index it in the state or open a new file to update
+    fn create_or_update_file(&mut self, path: String) -> &mut Self {
+        if let Ok(f) = ModulesWriter::open_file(path.as_str()) {
+            self.files.insert(path.clone(), (FileOperation::Update, f));
+            self.log_ok(format!("found file at {} ", path).as_str())
+        } else {
+            self.create_file(path);
+        }
+        self
+    }
     /// create parent module if needed and then create sub modules with their
     /// content
     pub fn run(&mut self) -> &mut Self {
@@ -184,7 +193,7 @@ impl ModulesWriter {
             mod_file_path = Some(format!("{}/mod.rs", &new_folder_path)); //my_app/pages/mod.rs
 
             self.create_folder(&new_folder_path)
-                .create_file(mod_file_path.clone().unwrap())
+                .create_or_update_file(mod_file_path.clone().unwrap())
                 .open_file_with_panic(&root_file_path)
                 .write_on_file(
                     &root_file_path,
@@ -215,21 +224,7 @@ impl ModulesWriter {
             }
 
             if let Some(path) = file_path {
-                let existing_file = ModulesWriter::open_file(path.as_str());
-
-                match existing_file {
-                    Ok(file) => {
-                        self.log_info(
-                            format!("Found file to update  => {}", path.clone()).as_str(),
-                        );
-                        self.files
-                            .insert(path.clone().to_string(), (FileOperation::Update, file));
-                    }
-                    Err(_) => {
-                        self.log_info(format!("Will create new file => {}", path.clone()).as_str());
-                        self.create_file(path.clone());
-                    }
-                }
+                self.create_or_update_file(path.clone());
 
                 match self.files.get_mut(&path) {
                     None => {}
@@ -291,5 +286,27 @@ impl ModulesWriter {
     /// Log error in progress bar
     pub fn log_error(&self, msg: &str) {
         self.pb.println(format!("[!] {}", msg).as_str());
+    }
+
+    pub fn get_number_of_created_file(&self) -> u32 {
+        let mut n = 0;
+
+        for (_, (op, _)) in self.files.iter() {
+            if op.eq(&FileOperation::Create) {
+                n += 1;
+            }
+        }
+        n
+    }
+
+    pub fn get_number_of_updated_file(&self) -> u32 {
+        let mut n = 0;
+
+        for (_, (op, _)) in self.files.iter() {
+            if op.eq(&FileOperation::Update) {
+                n += 1;
+            }
+        }
+        n
     }
 }
