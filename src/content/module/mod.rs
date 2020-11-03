@@ -150,7 +150,8 @@ pub fn get_modules(routes_enum: ItemEnum) -> IndexMap<String, SeedModule> {
                 .set_init(format!("{} {}", _INIT_COMMENT, init))
                 .set_model(format!("{} {}", _MODEL_COMMENT, _MODEL_TEMPLATE))
                 .set_msg(format!("{} {}", _MESSAGE_COMMENT, _MESSAGE_TEMPLATE))
-                .set_view(format!("{} {}", _VIEW_COMMENT, view));
+                .set_view(format!("{} {}", _VIEW_COMMENT, view))
+                .set_routes(format!("{} {}", _ROUTES_COMMENT, _ROUTES_TEMPLATE));
 
             map.insert(v.ident.clone().to_string().to_case(Case::Snake), module);
         }

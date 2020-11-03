@@ -137,6 +137,17 @@ pub fn write_modules(
                 ));
             }
 
+            let res = file.write_all(format!("{}\n", module.routes().to_string()).as_ref());
+            write_space(&file);
+            if let Err(e) = res {
+            } else {
+                pb.println(format!(
+                    "[+] created pub enum Routes  for module {} [ => ] in  {} ()",
+                    module.origin_route().as_ref().unwrap().name,
+                    file_path,
+                ));
+            }
+
             let res = file.write_all(format!("{}\n", module.msg().to_string()).as_ref());
             write_space(&file);
             if let Err(e) = res {
