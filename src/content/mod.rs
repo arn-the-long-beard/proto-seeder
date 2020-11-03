@@ -18,40 +18,43 @@ mod view;
 /// Mdg, Model, Routes) for TEA
 #[derive(Debug)]
 pub struct SeedContent {
-    local_views: IndexMap<String, (String, SeedRoute)>,
-    guards: IndexMap<String, (String, Vec<SeedRoute>)>,
-    directory: Option<String>,
-    modules: IndexMap<String, SeedModule>,
+    local_views: IndexMap<String, (String, SeedRoute,),>,
+    guards: IndexMap<String, (String, Vec<SeedRoute,>,),>,
+    directory: Option<String,>,
+    modules: IndexMap<String, SeedModule,>,
 }
 
 impl SeedContent {
-    pub fn local_views(&self) -> &IndexMap<String, (String, SeedRoute)> {
+    pub fn local_views(&self,) -> &IndexMap<String, (String, SeedRoute,),> {
         &self.local_views
     }
-    pub fn guards(&self) -> &IndexMap<String, (String, Vec<SeedRoute>)> {
+
+    pub fn guards(&self,) -> &IndexMap<String, (String, Vec<SeedRoute,>,),> {
         &self.guards
     }
-    pub fn directory(&self) -> &Option<String> {
+
+    pub fn directory(&self,) -> &Option<String,> {
         &self.directory
     }
-    pub fn modules(&self) -> &IndexMap<String, SeedModule> {
+
+    pub fn modules(&self,) -> &IndexMap<String, SeedModule,> {
         &self.modules
     }
 }
 
 impl SeedContent {
-    pub fn new(routes_enum: ItemEnum, model: ItemStruct) -> Self {
+    pub fn new(routes_enum: ItemEnum, model: ItemStruct,) -> Self {
         SeedContent {
-            local_views: get_local_views(&routes_enum, model.clone()),
-            guards: get_guards(&routes_enum, model.clone()),
-            directory: modules_path(&routes_enum.attrs.iter()),
-            modules: get_modules(routes_enum),
+            local_views: get_local_views(&routes_enum, model.clone(),),
+            guards: get_guards(&routes_enum, model.clone(),),
+            directory: modules_path(&routes_enum.attrs.iter(),),
+            modules: get_modules(routes_enum,),
         }
     }
 }
 
-fn get_scoped_field(scope: String, field: &&Field) -> bool {
-    if let Some(ident) = &field.ident {
+fn get_scoped_field(scope: String, field: &&Field,) -> bool {
+    if let Some(ident,) = &field.ident {
         *ident == scope
     } else {
         false
@@ -85,13 +88,13 @@ mod test {
 
     #[test]
     fn test_get_local_views() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
-        let routes_enum = find_routes(&parsed_file);
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL,).unwrap();
+        let model = find_model(&parsed_file,);
+        let routes_enum = find_routes(&parsed_file,);
 
-        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap());
+        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap(),);
 
-        let mut should_have: IndexMap<String, (String, SeedRoute)> = IndexMap::new();
+        let mut should_have: IndexMap<String, (String, SeedRoute,),> = IndexMap::new();
 
         should_have.insert(
             "forbidden".to_string(),
@@ -155,11 +158,11 @@ mod test {
 
     #[test]
     fn get_pages() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
-        let routes_enum = find_routes(&parsed_file);
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL,).unwrap();
+        let model = find_model(&parsed_file,);
+        let routes_enum = find_routes(&parsed_file,);
 
-        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap());
+        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap(),);
         assert_eq!(content.directory.unwrap(), "pages");
     }
 }

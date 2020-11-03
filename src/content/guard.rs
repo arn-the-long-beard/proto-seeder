@@ -8,15 +8,17 @@ use syn::{export::ToTokens, ItemEnum, ItemStruct};
 pub fn get_guards(
     routes_enum: &ItemEnum,
     model: ItemStruct,
-) -> IndexMap<String, (String, Vec<SeedRoute>)> {
-    let mut map: IndexMap<String, (String, Vec<SeedRoute>)> = IndexMap::new();
+) -> IndexMap<String, (String, Vec<SeedRoute,>,),> {
+    let mut map: IndexMap<String, (String, Vec<SeedRoute,>,),> = IndexMap::new();
 
     for v in routes_enum.variants.iter() {
-        if let Some((model_scope, guard, _)) = get_guard_attribute(v.ident.clone(), v.attrs.iter())
+        if let Some((model_scope, guard, _,),) =
+            get_guard_attribute(v.ident.clone(), v.attrs.iter(),)
         {
-            let function_content = get_guard_function(model_scope.as_str(), guard.as_str(), &model);
+            let function_content =
+                get_guard_function(model_scope.as_str(), guard.as_str(), &model,);
 
-            if let Some(g) = map.get_mut(&guard) {
+            if let Some(g,) = map.get_mut(&guard,) {
                 g.1.push(SeedRoute {
                     name: v.ident.clone().to_string(),
                     content_to_load: function_content,
@@ -24,7 +26,7 @@ pub fn get_guards(
                     children: false,
                     id_param: false,
                     query: false,
-                })
+                },)
             } else {
                 map.insert(
                     guard.clone(),
@@ -47,7 +49,7 @@ pub fn get_guards(
 }
 
 /// todo add Model extractor to match the scope
-pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct) -> String {
+pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct,) -> String {
     if model_scope.is_empty() {
         format!(
             "fn {}(model : &Model) -> Option<bool> {{\"Write condition\"}}",
@@ -57,14 +59,14 @@ pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct) ->
         let scope = model
             .fields
             .iter()
-            .find(|field| get_scoped_field(model_scope.to_string(), field));
+            .find(|field| get_scoped_field(model_scope.to_string(), field,),);
         // fix it with Model
 
-        if let Some(s) = scope {
+        if let Some(s,) = scope {
             let scope_type = &mut s.ty.to_token_stream().to_string();
-            scope_type.retain(|c| !c.is_whitespace());
+            scope_type.retain(|c| !c.is_whitespace(),);
 
-            let ident = &s.ident.as_ref().expect("Should have get property name");
+            let ident = &s.ident.as_ref().expect("Should have get property name",);
             format!(
                 "fn {}({} : &{}) -> Option<bool> {{\"Write condition\"}}",
                 guard,
@@ -98,15 +100,15 @@ mod test {
 
     #[test]
     fn test_get_guards() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
-        let routes_enum = find_routes(&parsed_file);
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL,).unwrap();
+        let model = find_model(&parsed_file,);
+        let routes_enum = find_routes(&parsed_file,);
 
-        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap());
+        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap(),);
 
-        let mut should_have: IndexMap<String, (String, SeedRoute)> = IndexMap::new();
+        let mut should_have: IndexMap<String, (String, SeedRoute,),> = IndexMap::new();
 
-        let guard = content.guards.get("guard").unwrap();
+        let guard = content.guards.get("guard",).unwrap();
         assert_eq!(guard.1.len(), 2);
 
         assert_eq!(
@@ -131,7 +133,7 @@ mod test {
                 content_to_load: GUARD.to_string()
             }
         );
-        let admin_guard = content.guards.get("admin_guard").unwrap();
+        let admin_guard = content.guards.get("admin_guard",).unwrap();
         assert_eq!(
             admin_guard.1[0],
             SeedRoute {

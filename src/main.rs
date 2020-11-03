@@ -26,7 +26,7 @@ struct Cli {
     #[structopt(short, long)]
     generate: bool,
 
-    ///Test debug mode
+    /// Test debug mode
     /// For now this is dummy , we need to add log level later
     #[structopt(short, long)]
     debug: bool,
@@ -35,13 +35,13 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-fn main() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<(),> {
     let args: Cli = Cli::from_args();
 
     if args.generate {}
 
     let pb = ProgressBar::new_spinner();
-    pb.enable_steady_tick(120);
+    pb.enable_steady_tick(120,);
     pb.set_style(
         ProgressStyle::default_spinner()
             // For more spinners check out the cli-spinners project:
@@ -54,26 +54,27 @@ fn main() -> anyhow::Result<()> {
                 "▹▹▹▸▹",
                 "▹▹▹▹▸",
                 "▪▪▪▪▪",
-            ])
-            .template("{spinner:.blue} {msg}"),
+            ],)
+            .template("{spinner:.blue} {msg}",),
     );
 
-    let mut file = File::open(&args.path)
-        .unwrap_or_else(|_| panic!("Unable to open file , {}", &args.path.to_str().unwrap()));
+    let mut file = File::open(&args.path,)
+        .unwrap_or_else(|_| panic!("Unable to open file , {}", &args.path.to_str().unwrap()),);
 
     let mut src = String::new();
-    file.read_to_string(&mut src).expect("Unable to read file");
-    let parsed_file = syn::parse_file(&src)?;
+    file.read_to_string(&mut src,)
+        .expect("Unable to read file",);
+    let parsed_file = syn::parse_file(&src,)?;
 
-    pb.set_message("Searching for routes");
-    let enum_route = find_routes(&parsed_file);
-    let model = find_model(&parsed_file);
+    pb.set_message("Searching for routes",);
+    let enum_route = find_routes(&parsed_file,);
+    let model = find_model(&parsed_file,);
 
     if model.is_none() {
-        pb.finish_with_message("No Model detected, so nothing will be created");
-        return Ok(());
-    } else if let Some(routes) = enum_route {
-        let seed_content = SeedContent::new(routes, Option::unwrap(model));
+        pb.finish_with_message("No Model detected, so nothing will be created",);
+        return Ok((),);
+    } else if let Some(routes,) = enum_route {
+        let seed_content = SeedContent::new(routes, Option::unwrap(model,),);
 
         pb.println(
             format!(
@@ -98,36 +99,39 @@ fn main() -> anyhow::Result<()> {
             .as_str(),
         );
 
-        pb.println("[+] finished parsing the file");
+        pb.println("[+] finished parsing the file",);
 
         pb.set_message(
             format!("creating local views on {}", &args.path.to_str().unwrap()).as_str(),
         );
 
-        let mut file = OpenOptions::new()
-            .write(true)
-            .append(true)
-            .open(&args.path)
-            .unwrap_or_else(|_| panic!("Unable to update file , {}", &args.path.to_str().unwrap()));
+        let mut file =
+            OpenOptions::new()
+                .write(true,)
+                .append(true,)
+                .open(&args.path,)
+                .unwrap_or_else(|_| {
+                    panic!("Unable to update file , {}", &args.path.to_str().unwrap())
+                },);
 
         let current_path = args.path.parent().unwrap();
 
-        write_local_views(seed_content.local_views().iter(), &file, &pb);
+        write_local_views(seed_content.local_views().iter(), &file, &pb,);
 
-        write_guards(seed_content.guards().iter(), &file, &pb);
+        write_guards(seed_content.guards().iter(), &file, &pb,);
 
-        pb.set_message("Updating your files.");
+        pb.set_message("Updating your files.",);
 
         let mut writer = ModulesWriter::new(
             seed_content,
             pb,
             current_path
                 .to_str()
-                .expect("should get string of current path")
+                .expect("should get string of current path",)
                 .to_string(),
             args.path
                 .to_str()
-                .expect("should get string of target file")
+                .expect("should get string of target file",)
                 .to_string(),
         );
 
@@ -141,14 +145,14 @@ fn main() -> anyhow::Result<()> {
         //     &args.path,
         // );
 
-        writer.pb.set_message("Creating new files.");
-        writer.pb.println("[+] Files created");
-        writer.pb.finish_with_message("Done");
+        writer.pb.set_message("Creating new files.",);
+        writer.pb.println("[+] Files created",);
+        writer.pb.finish_with_message("Done",);
     } else {
-        pb.finish_with_message("No routes detected, so nothing will be created");
-        return Ok(());
+        pb.finish_with_message("No routes detected, so nothing will be created",);
+        return Ok((),);
     }
 
-    Ok(())
+    Ok((),)
     // todo add counting maybe ?
 }
