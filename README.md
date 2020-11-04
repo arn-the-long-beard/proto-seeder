@@ -58,3 +58,4 @@ For later
 - Detect if future file already exist -> Done
 - If future file already exist, try to apply the command line recursively to its Routes enum?
 - Check if content already exist, then it will not add it -> Done
+- Check if update has been made or not and display message instead of now which is actually the number of file to update
