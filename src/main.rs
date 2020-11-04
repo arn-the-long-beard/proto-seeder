@@ -1,7 +1,11 @@
 use crate::{
     content::SeedContent,
     parser::{find_model, find_routes},
-    writer::{guard::write_guards, module::ModulesWriter, view::write_local_views},
+    writer::{
+        guard::write_guards,
+        module::{manager::ContentManager, ModulesWriter},
+        view::write_local_views,
+    },
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
@@ -137,14 +141,17 @@ fn main() -> anyhow::Result<()> {
                 .to_string(),
         );
 
-        writer.add_or_update_imports().add_or_update_content();
+        let mut content_manager = ContentManager::new(writer);
+        content_manager
+            .add_or_update_imports()
+            .add_or_update_content();
+    // pb.finish_with_message("Done");
 
-        writer.log_info(
-            format!("Created {} new files", writer.get_number_of_created_file()).as_str(),
-        );
-        writer.log_info(format!("Updated {} files", writer.get_number_of_updated_file()).as_str());
-
-        writer.pb.finish_with_message("Done");
+    // writer.log_info(
+    //     format!("Created {} new files",
+    // writer.get_number_of_created_file()).as_str(), );
+    // writer.log_info(format!("Updated {} files",
+    // writer.get_number_of_updated_file()).as_str());
     } else {
         pb.finish_with_message("No routes detected, so nothing will be created");
         return Ok(());
