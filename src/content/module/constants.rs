@@ -183,7 +183,7 @@ pub const _MESSAGE_TEMPLATE: &str = r###"
 
 pub const _UPDATE_COMMENT: &str = r###"
 // ------ ------
-//     UPDAYE
+//     UPDATE
 // ------ ------
 
 "###;

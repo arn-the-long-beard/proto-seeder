@@ -65,12 +65,24 @@ fn main() -> anyhow::Result<()> {
     pb.set_message("Searching for routes");
     let enum_route = find_routes(&parsed_file);
     let model = find_model(&parsed_file);
-
+    let current_path = args
+        .path
+        .parent()
+        .unwrap()
+        .to_str()
+        .expect("should have gotten the current path");
     if model.is_none() {
         pb.finish_with_message("No Model detected, so nothing will be created");
         return Ok(());
     } else if let Some(routes) = enum_route {
-        let seed_content = SeedContent::new(routes, Option::unwrap(model));
+        let seed_content = SeedContent::new(
+            routes,
+            Option::unwrap(model),
+            current_path,
+            args.path
+                .to_str()
+                .expect("should get string of target file"),
+        );
 
         pb.println(
             format!(
@@ -107,10 +119,10 @@ fn main() -> anyhow::Result<()> {
             .open(&args.path)
             .unwrap_or_else(|_| panic!("Unable to update file , {}", &args.path.to_str().unwrap()));
 
-        let current_path = args.path.parent().unwrap();
-
+        //todo move writer
         write_local_views(seed_content.local_views().iter(), &file, &pb);
 
+        // todo move to writer
         write_guards(seed_content.guards().iter(), &file, &pb);
 
         pb.set_message("Updating your files.");
@@ -118,23 +130,20 @@ fn main() -> anyhow::Result<()> {
         let mut writer = ModulesWriter::new(
             seed_content,
             pb,
-            current_path
-                .to_str()
-                .expect("should get string of current path")
-                .to_string(),
+            current_path.to_string(),
             args.path
                 .to_str()
                 .expect("should get string of target file")
                 .to_string(),
         );
 
-        writer.run();
-        writer
-            .pb
-            .println(format!("Created {} new files", writer.get_number_of_created_file()).as_str());
-        writer
-            .pb
-            .println(format!("Updated {} files", writer.get_number_of_updated_file()).as_str());
+        writer.add_or_update_imports().add_or_update_content();
+
+        writer.log_info(
+            format!("Created {} new files", writer.get_number_of_created_file()).as_str(),
+        );
+        writer.log_info(format!("Updated {} files", writer.get_number_of_updated_file()).as_str());
+
         writer.pb.finish_with_message("Done");
     } else {
         pb.finish_with_message("No routes detected, so nothing will be created");
