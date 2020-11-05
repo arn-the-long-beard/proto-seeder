@@ -145,13 +145,20 @@ fn main() -> anyhow::Result<()> {
         content_manager
             .add_or_update_imports()
             .add_or_update_content();
-    // pb.finish_with_message("Done");
 
-    // writer.log_info(
-    //     format!("Created {} new files",
-    // writer.get_number_of_created_file()).as_str(), );
-    // writer.log_info(format!("Updated {} files",
-    // writer.get_number_of_updated_file()).as_str());
+        content_manager
+            .writer
+            .log_info(format!("Created {} new files", content_manager.file_created).as_str());
+
+        content_manager
+            .writer
+            .log_info(format!("Updated {} files", content_manager.file_updated).as_str());
+
+        content_manager
+            .writer
+            .log_info(format!("Ignored {} files", content_manager.file_ignored).as_str());
+
+        content_manager.writer.pb.finish_with_message("Done");
     } else {
         pb.finish_with_message("No routes detected, so nothing will be created");
         return Ok(());

@@ -12,19 +12,23 @@ use std::{
     io::{Read, Write},
 };
 
-/// Do manage the SeedContent on modules
-/// Do use the checker to know if need to create or merge content
+/// Manage the SeedContent on modules
+/// Uses the checker to know if need to create or ignore content
 pub struct ContentManager {
-    number_file_updates: u32,
-    number_file_created: u32,
+    pub file_ignored: u32,
+    pub file_created: u32,
+    pub file_updated: u32,
+    /// The module writer manage the creation, reading and update of files
     pub writer: ModulesWriter,
 }
 
 impl ContentManager {
+    /// Use the writer to access file and update their content
     pub fn new(writer: ModulesWriter) -> ContentManager {
         ContentManager {
-            number_file_updates: 0,
-            number_file_created: 0,
+            file_ignored: 0,
+            file_created: 0,
+            file_updated: 0,
             writer,
         }
     }
@@ -116,15 +120,24 @@ impl ContentManager {
                         .log_error(format!("{:?}", read.unwrap_err()).as_str());
                 }
                 imports = self.update_imports_to_write(imports.as_str(), &src, parent);
+                if imports.is_empty() {
+                    self.file_ignored += 1;
+                } else {
+                    self.file_updated += 1;
+                }
             }
-            FileOperation::Create => {}
+            FileOperation::Create => {
+                self.file_created += 1;
+            }
         }
 
-        self.write_on_file_with_custom_message(
-            path.as_str(),
-            imports.as_str(),
-            format!("import parent module => {}", imports).as_str(),
-        );
+        if !imports.is_empty() {
+            self.write_on_file_with_custom_message(
+                path.as_str(),
+                imports.as_str(),
+                format!("import parent module => {}", imports).as_str(),
+            );
+        }
 
         self
     }
@@ -132,41 +145,30 @@ impl ContentManager {
     fn insert_content(&mut self, path: &str, module: SeedModule) {
         const IMPORT_SEED: &str = r###"use seed::{prelude::*, *};"###;
         self.write_on_file(&path, format!("{}\n", IMPORT_SEED).as_str())
-            .write_on_file_with_custom_message(
-                &path,
-                module.init(),
-                "adding
-pub fn init()",
-            )
+            .write_on_file_with_custom_message(&path, module.init(), "adding pub fn init()")
             .write_on_file_with_custom_message(&path, module.model(), "adding pub struct Model{}")
-            .write_on_file_with_custom_message(
-                &path,
-                module.routes(),
-                "adding pub enum
-Routes{} ",
-            )
+            .write_on_file_with_custom_message(&path, module.routes(), "adding pub enum Routes{} ")
             .write_on_file_with_custom_message(&path, module.msg(), "adding pub enum Msg{}")
-            .write_on_file_with_custom_message(
-                &path,
-                module.update(),
-                "adding pub fn
-update()",
-            )
+            .write_on_file_with_custom_message(&path, module.update(), "adding pub fn update()")
             .write_on_file_with_custom_message(&path, module.view(), "adding pub fn view()");
+        self.file_created += 1;
     }
 
     fn update_content_if_needed(&mut self, path: &str, src: &str, module: SeedModule) {
         let check = Checker::store_content_for_check(src);
-
+        let mut number_update = 0;
         if check.init_exist() {
             self.writer.log_info("file already has init");
         } else {
+            number_update += 1;
             self.write_on_file_with_custom_message(&path, module.init(), "adding pub fn init()");
         }
 
         if check.model_exist() {
             self.writer.log_info("file already has Model");
         } else {
+            number_update += 1;
+
             self.write_on_file_with_custom_message(
                 &path,
                 module.model(),
@@ -176,6 +178,8 @@ update()",
         if check.routes_exist() {
             self.writer.log_info("file already has Routes");
         } else {
+            number_update += 1;
+
             self.write_on_file_with_custom_message(
                 &path,
                 module.routes(),
@@ -185,6 +189,8 @@ update()",
         if check.message_exist() {
             self.writer.log_info("file already has Msg");
         } else {
+            number_update += 1;
+
             self.write_on_file_with_custom_message(
                 &path,
                 module.routes(),
@@ -194,6 +200,7 @@ update()",
         if check.update_exist() {
             self.writer.log_info("file already has update");
         } else {
+            number_update += 1;
             self.write_on_file_with_custom_message(
                 &path,
                 module.update(),
@@ -203,7 +210,16 @@ update()",
         if check.view_exist() {
             self.writer.log_info("file already has view");
         } else {
+            number_update += 1;
+
             self.write_on_file_with_custom_message(&path, module.view(), "adding pub fn view() ");
+        }
+
+        if number_update == 0 {
+            self.file_ignored += 1;
+        }
+        if number_update != 0 {
+            self.file_updated += 1;
         }
     }
 
