@@ -249,7 +249,7 @@ impl ContentManager {
                 }
             }
         }
-        new_imports
+        new_imports.trim().to_string()
     }
     /// Will check if content already exist and create or merge
     pub fn add_or_update_content(&mut self) -> &mut Self {
