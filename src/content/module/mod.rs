@@ -261,7 +261,7 @@ fn generate_module_meta(
     let mut parent = parent_module.clone();
     match parent_module.parent_type {
         ParentModuleType::TargetFile => {
-            let import = format!("mod {};", name.clone());
+            let import = format!("mod {};", name);
             parent.imports_content.push(import.clone());
             parent.imports_names.push(name.to_string());
             (
