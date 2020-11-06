@@ -9,7 +9,7 @@ use crate::{
     parser::*,
     writer::module::{checker::Checker, manager::ContentManager},
 };
-use indexmap::map::{IndexMap, Iter};
+use indexmap::map::{IndexMap};
 use indicatif::ProgressBar;
 use std::{
     fs,
@@ -17,7 +17,7 @@ use std::{
     io::{Read, Write},
 };
 
-mod checker;
+pub mod checker;
 pub mod manager;
 // /// Specific options gotten from the command line
 // pub struct WritingOptions {

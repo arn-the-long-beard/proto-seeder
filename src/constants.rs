@@ -229,3 +229,33 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 }
 
  "###;
+pub const _FILE_WITH_GUARD: &str = r###"
+    
+// ------ ------
+//     Init
+// ------ ------
+
+fn init(url: Url, orders: &mut impl Orders<Msg,>,) -> Model {
+    orders
+        .subscribe(Msg::UrlChanged,)
+        .subscribe(Msg::UrlRequested,)
+        .subscribe(Msg::UserLogged,);
+
+    let mut router: Router<Routes,> = Router::new();
+    router.init_url_and_navigation(url,);
+
+    Model {
+        theme: Theme::default(),
+        login: Default::default(),
+        dashboard: Default::default(),
+        admin: Default::default(),
+        router,
+        logged_user: None,
+    }
+}
+
+fn guard() {
+
+}
+
+ "###;

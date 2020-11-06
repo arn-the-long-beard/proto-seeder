@@ -9,9 +9,9 @@ use crate::{
 use indexmap::map::IndexMap;
 use syn::{Field, ItemEnum, ItemStruct};
 
-mod guard;
+pub mod guard;
 pub mod module;
-mod view;
+pub mod view;
 
 /// Routing Seed concept extracted from the parser
 /// This struct conains all thew views, guard, modules ( init ,views, update,

@@ -87,6 +87,15 @@ for file ",
     pub fn view_exist(&self) -> bool {
         self.check_duplicate("view")
     }
+
+    pub fn check_local_function_exist(name: &str, src: &str) -> bool {
+        let parsed_file = syn::parse_file(&src).expect(
+            "Should read content
+                            for file ",
+        );
+
+        matches!(find_function(&parsed_file, name), Some(_))
+    }
 }
 
 #[cfg(test)]
@@ -105,5 +114,16 @@ mod test {
         assert_eq!(check.routes_exist(), true);
         assert_eq!(check.model_exist(), true);
         assert_eq!(check.update_exist(), false);
+    }
+
+    #[test]
+    fn test_if_exist_function() {
+        let check = Checker::check_local_function_exist("guard", _FILE_WITH_GUARD);
+
+        assert_eq!(check, true);
+
+        let check = Checker::check_local_function_exist("admin_guard", _FILE_WITH_GUARD);
+
+        assert_eq!(check, false);
     }
 }

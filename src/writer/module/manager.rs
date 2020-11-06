@@ -1,11 +1,15 @@
 use crate::{
-    content::module::{
-        import::{ImportModule, ParentModuleType},
-        SeedModule,
+    content::{
+        module::{
+            import::{ImportModule, ParentModuleType},
+            SeedModule,
+        },
+        SeedRoute,
     },
     writer,
     writer::module::{checker::Checker, FileOperation, ModulesWriter},
 };
+use indexmap::map::{IndexMap, Iter};
 use std::{
     fs,
     fs::{File, OpenOptions},
@@ -279,5 +283,104 @@ impl ContentManager {
             }
         }
         self
+    }
+
+    /// For writing guard and local view on the target file
+    /// Could be extended for custom content maybe on any modules
+    pub fn add_or_update_local_content(&mut self) -> &mut Self {
+        let path = self.writer.target_file_path.to_string();
+        self.writer
+            .create_or_update_file(self.writer.target_file_path.to_string());
+        let (op, file) = self.writer.files.get_mut(&path).unwrap();
+
+        match op {
+            FileOperation::Update => {
+                let mut src = String::new();
+
+                let read = file.read_to_string(&mut src);
+
+                if read.is_err() {
+                    self.writer
+                        .log_error(format!("Should read file for  {}", &path).as_str());
+                    self.writer
+                        .log_error(format!("{:?}", read.unwrap_err()).as_str());
+                }
+                let views = self.writer.content.local_views().clone();
+                let guards = self.writer.content.guards().clone();
+                let updates = self.write_local_views(&path, src.as_str(), &views)
+                    + self.write_local_guards(&path, src.as_str(), &guards);
+
+                if updates == 0 {
+                    self.file_ignored += 1;
+                }
+            }
+            FileOperation::Create => {
+                // self.insert_content(&path, module.clone());
+            }
+        }
+        self
+    }
+
+    fn write_local_views(
+        &mut self,
+        path: &str,
+        src: &str,
+        views: &IndexMap<String, (String, SeedRoute)>,
+    ) -> u32 {
+        let mut updates_number = 0;
+        for (view_name, (view_content, seed_route)) in views {
+            let check = Checker::check_local_function_exist(view_name, src);
+            if check {
+                self.writer.log_info(
+                    format!(
+                        "No need to create view for route {} [ => ] as fn {} ()",
+                        seed_route.name, view_name
+                    )
+                    .as_str(),
+                );
+            } else {
+                self.write_on_file_with_custom_message(
+                    path,
+                    view_content,
+                    format!("writing local view for route {}", seed_route.name).as_str(),
+                );
+
+                updates_number += 1;
+            }
+        }
+        if updates_number != 0 {
+            self.file_updated += 1;
+        }
+
+        updates_number
+    }
+
+    fn write_local_guards(
+        &mut self,
+        path: &str,
+        src: &str,
+        guards: &IndexMap<String, (String, Vec<SeedRoute>)>,
+    ) -> u32 {
+        let mut updates_number = 0;
+        for (guard_name, (guard_content, _)) in guards {
+            let check = Checker::check_local_function_exist(guard_name, src);
+            if check {
+                self.writer.log_info(
+                    format!("No need to create guard [ => ] as fn {} ()", guard_name,).as_str(),
+                );
+            } else {
+                self.write_on_file_with_custom_message(
+                    path,
+                    guard_content,
+                    format!("writing local guard as {}", guard_name).as_str(),
+                );
+
+                updates_number += 1;
+            }
+        }
+        if updates_number != 0 {
+            self.file_updated += 1;
+        }
+        updates_number
     }
 }

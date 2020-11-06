@@ -1,11 +1,7 @@
 use crate::{
     content::SeedContent,
     parser::{find_model, find_routes},
-    writer::{
-        guard::write_guards,
-        module::{manager::ContentManager, ModulesWriter},
-        view::write_local_views,
-    },
+    writer::module::{manager::ContentManager, ModulesWriter},
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
@@ -123,12 +119,6 @@ fn main() -> anyhow::Result<()> {
             .open(&args.path)
             .unwrap_or_else(|_| panic!("Unable to update file , {}", &args.path.to_str().unwrap()));
 
-        //todo move writer
-        write_local_views(seed_content.local_views().iter(), &file, &pb);
-
-        // todo move to writer
-        write_guards(seed_content.guards().iter(), &file, &pb);
-
         pb.set_message("Updating your files.");
 
         let mut writer = ModulesWriter::new(
@@ -144,7 +134,8 @@ fn main() -> anyhow::Result<()> {
         let mut content_manager = ContentManager::new(writer);
         content_manager
             .add_or_update_imports()
-            .add_or_update_content();
+            .add_or_update_content()
+            .add_or_update_local_content();
 
         content_manager
             .writer
