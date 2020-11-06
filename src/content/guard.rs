@@ -50,7 +50,7 @@ pub fn get_guards(
 pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct) -> String {
     if model_scope.is_empty() {
         format!(
-            "fn {}(model : &Model) -> Option<bool> {{\"Write condition\"}}",
+            "fn {}(model : &Model) -> Option<bool> {{log!(\"Write condition\")}}",
             guard,
         )
     } else {
@@ -66,7 +66,7 @@ pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct) ->
 
             let ident = &s.ident.as_ref().expect("Should have get property name");
             format!(
-                "fn {}({} : &{}) -> Option<bool> {{\"Write condition\"}}",
+                "fn {}({} : &{}) -> Option<bool> {{log!(\"Write condition\")}}",
                 guard,
                 ident.to_string(),
                 scope_type,
@@ -77,7 +77,7 @@ pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct) ->
                 model_scope, model.ident
             );
             format!(
-                "fn {}(model : &Model) -> Option<bool> {{\"Write condition\"}}",
+                "fn {}(model : &Model) -> Option<bool> {{log!(\"Write condition\")}}",
                 guard,
             )
         }
@@ -92,9 +92,9 @@ mod test {
     };
     use indexmap::map::IndexMap;
 
-    const GUARD: &str = r###"fn guard(model : &Model) -> Option<bool> {"Write condition"}"###;
+    const GUARD: &str = r###"fn guard(model : &Model) -> Option<bool> {log!("Write condition")}"###;
 
-    const ADMIN_GUARD: &str = r###"fn admin_guard(logged_user : &Option<LoggedData>) -> Option<bool> {"Write condition"}"###;
+    const ADMIN_GUARD: &str = r###"fn admin_guard(logged_user : &Option<LoggedData>) -> Option<bool> {log!("Write condition")}"###;
 
     #[test]
     fn test_get_guards() {
