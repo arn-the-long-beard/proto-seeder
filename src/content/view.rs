@@ -5,28 +5,48 @@ use crate::{
 use indexmap::map::IndexMap;
 use syn::{export::ToTokens, ItemEnum, ItemStruct};
 
-pub fn get_local_views(
-    routes_enum: &ItemEnum,
-    model: ItemStruct,
-) -> IndexMap<String, (String, SeedRoute)> {
-    let mut map: IndexMap<String, (String, SeedRoute)> = IndexMap::new();
+#[derive(PartialEq, Debug, Clone)]
+pub struct SeedView {
+    /// The name of the view
+    pub(crate) view_name: String,
+    /// Its content with function and body
+    pub(crate) view_content: String,
+    /// The route that will load it
+    pub(crate) route: SeedRoute,
+}
+
+impl SeedView {
+    pub fn view_name(&self) -> &str {
+        &self.view_name
+    }
+    pub fn view_content(&self) -> &str {
+        &self.view_content
+    }
+    pub fn route(&self) -> &SeedRoute {
+        &self.route
+    }
+}
+
+pub fn get_local_views(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<String, SeedView> {
+    let mut map: IndexMap<String, SeedView> = IndexMap::new();
 
     for v in routes_enum.variants.iter() {
         if let Some((model_scope, view)) = get_view_attribute(v.ident.clone(), v.attrs.iter()) {
             let function_content = get_view_function(model_scope.as_str(), view.as_str(), &model);
             map.insert(
                 view,
-                (
-                    function_content.clone(),
-                    SeedRoute {
+                SeedView {
+                    view_name: v.ident.clone().to_string(),
+                    view_content: function_content.clone(),
+                    route: SeedRoute {
                         name: v.ident.clone().to_string(),
-                        content_to_load: function_content,
+                        content_to_load: function_content.clone(),
                         nested: false,
                         children: false,
                         id_param: false,
                         query: false,
                     },
-                ),
+                },
             );
         }
     }

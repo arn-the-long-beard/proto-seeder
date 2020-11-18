@@ -4,6 +4,7 @@ use crate::{
             import::{ImportModule, ParentModuleType},
             SeedModule,
         },
+        view::SeedView,
         SeedRoute,
     },
     writer,
@@ -325,24 +326,24 @@ impl ContentManager {
         &mut self,
         path: &str,
         src: &str,
-        views: &IndexMap<String, (String, SeedRoute)>,
+        views: &IndexMap<String, SeedView>,
     ) -> u32 {
         let mut updates_number = 0;
-        for (view_name, (view_content, seed_route)) in views {
+        for (view_name, view) in views {
             let check = Checker::check_local_function_exist(view_name, src);
             if check {
                 self.writer.log_info(
                     format!(
                         "No need to create view for route {} [ => ] as fn {} ()",
-                        seed_route.name, view_name
+                        view.route.name, view_name
                     )
                     .as_str(),
                 );
             } else {
                 self.write_on_file_with_custom_message(
                     path,
-                    view_content,
-                    format!("writing local view for route {}", seed_route.name).as_str(),
+                    view.view_content.as_str(),
+                    format!("writing local view for route {}", view.route.name).as_str(),
                 );
 
                 updates_number += 1;
