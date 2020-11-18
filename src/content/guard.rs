@@ -1,23 +1,34 @@
 use crate::{
-    content::{get_scoped_field, SeedRoute},
+    content::{
+        get_scoped_field,
+        view::{get_view_function, SeedView},
+        SeedRoute,
+    },
     parser::view::get_guard_attribute,
 };
 use indexmap::map::IndexMap;
 use syn::{export::ToTokens, ItemEnum, ItemStruct};
 
-pub fn get_guards(
-    routes_enum: &ItemEnum,
-    model: ItemStruct,
-) -> IndexMap<String, (String, Vec<SeedRoute>)> {
-    let mut map: IndexMap<String, (String, Vec<SeedRoute>)> = IndexMap::new();
+#[derive(Debug, Clone)]
+pub struct SeedGuard {
+    pub(crate) name: String,
+    pub(crate) content: String,
+    pub(crate) redirect: SeedView,
+    pub(crate) routes: Vec<SeedRoute>,
+}
+
+pub fn get_guards(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<String, SeedGuard> {
+    let mut map: IndexMap<String, SeedGuard> = IndexMap::new();
 
     for v in routes_enum.variants.iter() {
-        if let Some((model_scope, guard, _)) = get_guard_attribute(v.ident.clone(), v.attrs.iter())
+        if let Some((model_scope, guard, redirect)) =
+            get_guard_attribute(v.ident.clone(), v.attrs.iter())
         {
             let function_content = get_guard_function(model_scope.as_str(), guard.as_str(), &model);
-
+            let redirect_function =
+                get_view_function(model_scope.as_str(), redirect.as_str(), &model);
             if let Some(g) = map.get_mut(&guard) {
-                g.1.push(SeedRoute {
+                g.routes.push(SeedRoute {
                     name: v.ident.clone().to_string(),
                     content_to_load: function_content,
                     nested: false,
@@ -28,17 +39,30 @@ pub fn get_guards(
             } else {
                 map.insert(
                     guard.clone(),
-                    (
-                        function_content.clone(),
-                        vec![SeedRoute {
+                    SeedGuard {
+                        name: guard,
+                        content: function_content.clone(),
+                        redirect: SeedView {
+                            name: redirect,
+                            content: redirect_function.clone(),
+                            route: SeedRoute {
+                                name: v.ident.clone().to_string(),
+                                nested: false,
+                                children: false,
+                                id_param: false,
+                                query: false,
+                                content_to_load: redirect_function.clone(),
+                            },
+                        },
+                        routes: vec![SeedRoute {
                             name: v.ident.clone().to_string(),
-                            content_to_load: function_content,
+                            content_to_load: function_content.clone(),
                             nested: false,
                             children: false,
                             id_param: false,
                             query: false,
                         }],
-                    ),
+                    },
                 );
             }
         }
@@ -107,10 +131,10 @@ mod test {
         let mut should_have: IndexMap<String, (String, SeedRoute)> = IndexMap::new();
 
         let guard = content.guards.get("guard").unwrap();
-        assert_eq!(guard.1.len(), 2);
+        assert_eq!(guard.routes.len(), 2);
 
         assert_eq!(
-            guard.1[0],
+            guard.routes[0],
             SeedRoute {
                 name: "Settings".to_string(),
                 nested: false,
@@ -121,7 +145,7 @@ mod test {
             }
         );
         assert_eq!(
-            guard.1[1],
+            guard.routes[1],
             SeedRoute {
                 name: "Dashboard".to_string(),
                 nested: false,
@@ -133,7 +157,7 @@ mod test {
         );
         let admin_guard = content.guards.get("admin_guard").unwrap();
         assert_eq!(
-            admin_guard.1[0],
+            admin_guard.routes[0],
             SeedRoute {
                 name: "Admin".to_string(),
                 nested: false,
@@ -144,6 +168,6 @@ mod test {
             }
         );
 
-        assert_eq!(admin_guard.1.len(), 1);
+        assert_eq!(admin_guard.routes.len(), 1);
     }
 }

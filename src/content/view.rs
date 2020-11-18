@@ -22,9 +22,9 @@ pub fn get_local_views(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<St
         if let Some((model_scope, view)) = get_view_attribute(v.ident.clone(), v.attrs.iter()) {
             let function_content = get_view_function(model_scope.as_str(), view.as_str(), &model);
             map.insert(
-                view,
+                view.clone(),
                 SeedView {
-                    name: v.ident.clone().to_string(),
+                    name: view,
                     content: function_content.clone(),
                     route: SeedRoute {
                         name: v.ident.clone().to_string(),
