@@ -8,9 +8,9 @@ use syn::{export::ToTokens, ItemEnum, ItemStruct};
 #[derive(PartialEq, Debug, Clone)]
 pub struct SeedView {
     /// The name of the view
-    pub(crate) view_name: String,
+    pub(crate) name: String,
     /// Its content with function and body
-    pub(crate) view_content: String,
+    pub(crate) content: String,
     /// The route that will load it
     pub(crate) route: SeedRoute,
 }
@@ -24,8 +24,8 @@ pub fn get_local_views(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<St
             map.insert(
                 view,
                 SeedView {
-                    view_name: v.ident.clone().to_string(),
-                    view_content: function_content.clone(),
+                    name: v.ident.clone().to_string(),
+                    content: function_content.clone(),
                     route: SeedRoute {
                         name: v.ident.clone().to_string(),
                         content_to_load: function_content.clone(),

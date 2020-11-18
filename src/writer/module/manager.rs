@@ -342,7 +342,7 @@ impl ContentManager {
             } else {
                 self.write_on_file_with_custom_message(
                     path,
-                    view.view_content.as_str(),
+                    view.content.as_str(),
                     format!("writing local view for route {}", view.route.name).as_str(),
                 );
                 self.write_on_file_with_custom_message(path, "\n", "Added indentation");

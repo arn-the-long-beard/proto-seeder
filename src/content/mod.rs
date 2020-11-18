@@ -118,8 +118,8 @@ mod test {
         should_have.insert(
             "forbidden".to_string(),
             SeedView {
-                view_name: "Forbidden".to_string(),
-                view_content: FORBIDDEN_VIEW.to_string(),
+                name: "Forbidden".to_string(),
+                content: FORBIDDEN_VIEW.to_string(),
                 route: SeedRoute {
                     name: "Forbidden".to_string(),
                     nested: false,
@@ -133,8 +133,8 @@ mod test {
         should_have.insert(
             "not_found".to_string(),
             SeedView {
-                view_name: "NotFound".to_string(),
-                view_content: NOT_FOUND.to_string(),
+                name: "NotFound".to_string(),
+                content: NOT_FOUND.to_string(),
                 route: SeedRoute {
                     name: "NotFound".to_string(),
                     nested: false,
@@ -149,8 +149,8 @@ mod test {
         should_have.insert(
             "home".to_string(),
             SeedView {
-                view_name: "Home".to_string(),
-                view_content: HOME.to_string(),
+                name: "Home".to_string(),
+                content: HOME.to_string(),
                 route: SeedRoute {
                     name: "Home".to_string(),
                     nested: false,
