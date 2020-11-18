@@ -15,18 +15,6 @@ pub struct SeedView {
     pub(crate) route: SeedRoute,
 }
 
-impl SeedView {
-    pub fn view_name(&self) -> &str {
-        &self.view_name
-    }
-    pub fn view_content(&self) -> &str {
-        &self.view_content
-    }
-    pub fn route(&self) -> &SeedRoute {
-        &self.route
-    }
-}
-
 pub fn get_local_views(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<String, SeedView> {
     let mut map: IndexMap<String, SeedView> = IndexMap::new();
 
