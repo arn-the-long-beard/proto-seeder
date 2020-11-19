@@ -1,3 +1,8 @@
+//! # proto_seeder
+//!
+//! `proto_seeder` is a experimental cli that generate Seed code based on
+//! routing from [seed_routing](https://github.com/arn-the-long-beard/seed-routing) with RoutingModules
+
 use crate::{
     content::SeedContent,
     parser::{find_model, find_routes},
