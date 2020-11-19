@@ -9,7 +9,7 @@ use crate::{
     parser::*,
     writer::module::{checker::Checker, manager::ContentManager},
 };
-use indexmap::map::{IndexMap};
+use indexmap::map::IndexMap;
 use indicatif::ProgressBar;
 use std::{
     fs,
@@ -50,9 +50,9 @@ pub struct ModulesWriter {
     current_path: String,
     /// List of folder created by the Writer
     /// For now it should be one if #[modules_path = "pages"]
-    folder_created: Vec<String>,
+    folder_created: Vec<String,>,
     /// List of files created or updated by their path
-    files: IndexMap<String, (FileOperation, File)>,
+    files: IndexMap<String, (FileOperation, File,),>,
 }
 
 impl ModulesWriter {
@@ -75,12 +75,12 @@ impl ModulesWriter {
 
     /// Create a folder and update the state of the Writer with it
     /// log or or info
-    fn create_folder(&mut self, path: &str) -> &mut Self {
-        if let Ok(_) = fs::create_dir(path) {
-            self.log_ok(format!("created folder {}", path).as_str());
-            self.folder_created.push(path.to_string());
+    fn create_folder(&mut self, path: &str,) -> &mut Self {
+        if let Ok(_,) = fs::create_dir(path,) {
+            self.log_ok(format!("created folder {}", path).as_str(),);
+            self.folder_created.push(path.to_string(),);
         } else {
-            self.log_info(format!("will use folder {}", path).as_str());
+            self.log_info(format!("will use folder {}", path).as_str(),);
         }
         self
     }
@@ -89,36 +89,36 @@ impl ModulesWriter {
     /// if fail, then panic
     /// if succeed then file is indexed so we can use it later with the path
     /// key
-    fn open_file_with_panic(&mut self, path: &str) -> &mut Self {
+    fn open_file_with_panic(&mut self, path: &str,) -> &mut Self {
         let file = OpenOptions::new()
-            .write(true)
-            .read(true)
-            .append(true)
-            .open(path)
-            .unwrap_or_else(|_| panic!("Unable to update file , {}", path));
+            .write(true,)
+            .read(true,)
+            .append(true,)
+            .open(path,)
+            .unwrap_or_else(|_| panic!("Unable to update file , {}", path),);
         self.files
-            .insert(path.to_string(), (FileOperation::Update, file));
+            .insert(path.to_string(), (FileOperation::Update, file,),);
         self
     }
 
     /// Standard open file to write and happen code ot it
-    fn open_file(path: &str) -> std::io::Result<File> {
+    fn open_file(path: &str,) -> std::io::Result<File,> {
         OpenOptions::new()
-            .read(true)
-            .write(true)
-            .append(true)
-            .open(path)
+            .read(true,)
+            .write(true,)
+            .append(true,)
+            .open(path,)
     }
 
     /// Create a new file and index it in the state
-    fn create_file(&mut self, path: String) -> &mut Self {
-        match File::create(path.clone()) {
-            Ok(file) => {
+    fn create_file(&mut self, path: String,) -> &mut Self {
+        match File::create(path.clone(),) {
+            Ok(file,) => {
                 self.files
-                    .insert(path.clone(), (FileOperation::Create, file));
-                self.log_ok(format!("created file at {} ", path).as_str());
-            }
-            Err(e) => {
+                    .insert(path.clone(), (FileOperation::Create, file,),);
+                self.log_ok(format!("created file at {} ", path).as_str(),);
+            },
+            Err(e,) => {
                 self.log_error(
                     format!(
                         "error {:?} when creating file at {}
@@ -127,34 +127,36 @@ impl ModulesWriter {
                     )
                     .as_str(),
                 );
-            }
+            },
         }
         self
     }
+
     /// Create a new file and index it in the state or open a new file to
-    fn create_or_update_file(&mut self, path: String) -> &mut Self {
-        if let Ok(f) = ModulesWriter::open_file(path.as_str()) {
-            self.files.insert(path.clone(), (FileOperation::Update, f));
-            self.log_ok(format!("found file to update at {} ", path).as_str());
+    fn create_or_update_file(&mut self, path: String,) -> &mut Self {
+        if let Ok(f,) = ModulesWriter::open_file(path.as_str(),) {
+            self.files
+                .insert(path.clone(), (FileOperation::Update, f,),);
+            self.log_ok(format!("found file to update at {} ", path).as_str(),);
         } else {
-            self.create_file(path);
+            self.create_file(path,);
         }
         self
     }
 
     /// Log success in progress bar
-    pub fn log_ok(&mut self, msg: &str) {
-        self.pb.println(format!("[+] {}", msg).as_str());
+    pub fn log_ok(&mut self, msg: &str,) {
+        self.pb.println(format!("[+] {}", msg).as_str(),);
     }
 
     /// Log info in progress bar
-    pub fn log_info(&mut self, msg: &str) {
-        self.pb.println(format!("[=>] {}", msg).as_str());
+    pub fn log_info(&mut self, msg: &str,) {
+        self.pb.println(format!("[=>] {}", msg).as_str(),);
     }
 
     /// Log error in progress bar
-    pub fn log_error(&mut self, msg: &str) {
-        self.pb.println(format!("[!] {}", msg).as_str());
+    pub fn log_error(&mut self, msg: &str,) {
+        self.pb.println(format!("[!] {}", msg).as_str(),);
     }
 
     // pub fn get_number_of_created_file(&self) -> u32 {

@@ -1,3 +1,4 @@
+
 pub const _SIMPLE_ROUTE: &str = r###"
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
 #[modules_path = "pages"]

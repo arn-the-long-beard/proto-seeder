@@ -15,12 +15,12 @@ pub struct SeedView {
     pub(crate) route: SeedRoute,
 }
 
-pub fn get_local_views(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<String, SeedView> {
-    let mut map: IndexMap<String, SeedView> = IndexMap::new();
+pub fn get_local_views(routes_enum: &ItemEnum, model: ItemStruct,) -> IndexMap<String, SeedView,> {
+    let mut map: IndexMap<String, SeedView,> = IndexMap::new();
 
     for v in routes_enum.variants.iter() {
-        if let Some((model_scope, view)) = get_view_attribute(v.ident.clone(), v.attrs.iter()) {
-            let function_content = get_view_function(model_scope.as_str(), view.as_str(), &model);
+        if let Some((model_scope, view,),) = get_view_attribute(v.ident.clone(), v.attrs.iter(),) {
+            let function_content = get_view_function(model_scope.as_str(), view.as_str(), &model,);
             map.insert(
                 view.clone(),
                 SeedView {
@@ -42,7 +42,7 @@ pub fn get_local_views(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<St
 }
 
 /// todo add Model extractor to match the scope
-pub fn get_view_function(model_scope: &str, view: &str, model: &ItemStruct) -> String {
+pub fn get_view_function(model_scope: &str, view: &str, model: &ItemStruct,) -> String {
     if model_scope.is_empty() {
         format!(
             "fn {}(model : &Model) -> Node<Msg>{{div![\"{}\"]}}",
@@ -52,14 +52,14 @@ pub fn get_view_function(model_scope: &str, view: &str, model: &ItemStruct) -> S
         let scope = model
             .fields
             .iter()
-            .find(|field| get_scoped_field(model_scope.to_string(), field));
+            .find(|field| get_scoped_field(model_scope.to_string(), field,),);
         // fix it with Model
 
-        if let Some(s) = scope {
+        if let Some(s,) = scope {
             let scope_type = &mut s.ty.to_token_stream().to_string();
-            scope_type.retain(|c| !c.is_whitespace());
+            scope_type.retain(|c| !c.is_whitespace(),);
 
-            let ident = &s.ident.as_ref().expect("Should have get property name");
+            let ident = &s.ident.as_ref().expect("Should have get property name",);
             format!(
                 "fn {}({} : &{}) -> Node<Msg>{{div![\"{}\"]}}",
                 view,
@@ -96,10 +96,10 @@ mod test {
     const HOME: &str = r###"fn home(theme : &Theme) -> Node<Msg>{div!["home"]}"###;
     #[test]
     fn test_get_view_function_when_scope_is_good() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL,).unwrap();
+        let model = find_model(&parsed_file,);
 
-        let result = get_view_function("logged_user", "forbidden", &model.unwrap());
+        let result = get_view_function("logged_user", "forbidden", &model.unwrap(),);
 
         let should_have = FORBIDDEN_VIEW;
 
@@ -108,10 +108,10 @@ mod test {
 
     #[test]
     fn test_get_view_function_when_scope_is_wrong() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL,).unwrap();
+        let model = find_model(&parsed_file,);
 
-        let result = get_view_function("my_wrong_scope_on_model", "forbidden", &model.unwrap());
+        let result = get_view_function("my_wrong_scope_on_model", "forbidden", &model.unwrap(),);
 
         let should_have = r###"fn forbidden(model : &Model) -> Node<Msg>{div!["forbidden"]}"###;
 
@@ -120,10 +120,10 @@ mod test {
 
     #[test]
     fn test_get_view_function_when_no_scope() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL,).unwrap();
+        let model = find_model(&parsed_file,);
 
-        let result = get_view_function("", "not_found", &model.unwrap());
+        let result = get_view_function("", "not_found", &model.unwrap(),);
 
         let should_have = NOT_FOUND;
 

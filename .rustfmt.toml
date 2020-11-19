@@ -17,6 +17,6 @@ trailing_comma = "Always"
 merge_imports = true
 error_on_line_overflow = true
 error_on_unformatted = true
-report_todo = "Always"
+#report_todo = "Always"
 report_fixme = "Always"
 version = "Two"

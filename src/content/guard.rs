@@ -14,20 +14,21 @@ pub struct SeedGuard {
     pub(crate) name: String,
     pub(crate) content: String,
     pub(crate) redirect: SeedView,
-    pub(crate) routes: Vec<SeedRoute>,
+    pub(crate) routes: Vec<SeedRoute,>,
 }
 
-pub fn get_guards(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<String, SeedGuard> {
-    let mut map: IndexMap<String, SeedGuard> = IndexMap::new();
+pub fn get_guards(routes_enum: &ItemEnum, model: ItemStruct,) -> IndexMap<String, SeedGuard,> {
+    let mut map: IndexMap<String, SeedGuard,> = IndexMap::new();
 
     for v in routes_enum.variants.iter() {
-        if let Some((model_scope, guard, redirect)) =
-            get_guard_attribute(v.ident.clone(), v.attrs.iter())
+        if let Some((model_scope, guard, redirect,),) =
+            get_guard_attribute(v.ident.clone(), v.attrs.iter(),)
         {
-            let function_content = get_guard_function(model_scope.as_str(), guard.as_str(), &model);
+            let function_content =
+                get_guard_function(model_scope.as_str(), guard.as_str(), &model,);
             let redirect_function =
-                get_view_function(model_scope.as_str(), redirect.as_str(), &model);
-            if let Some(g) = map.get_mut(&guard) {
+                get_view_function(model_scope.as_str(), redirect.as_str(), &model,);
+            if let Some(g,) = map.get_mut(&guard,) {
                 g.routes.push(SeedRoute {
                     name: v.ident.clone().to_string(),
                     content_to_load: function_content,
@@ -35,7 +36,7 @@ pub fn get_guards(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<String,
                     children: false,
                     id_param: false,
                     query: false,
-                })
+                },)
             } else {
                 map.insert(
                     guard.clone(),
@@ -71,7 +72,7 @@ pub fn get_guards(routes_enum: &ItemEnum, model: ItemStruct) -> IndexMap<String,
 }
 
 /// todo add Model extractor to match the scope
-pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct) -> String {
+pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct,) -> String {
     if model_scope.is_empty() {
         format!(
             "fn {}(model : &Model) -> Option<bool> {{log!(\"Write condition\")}}",
@@ -81,14 +82,14 @@ pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct) ->
         let scope = model
             .fields
             .iter()
-            .find(|field| get_scoped_field(model_scope.to_string(), field));
+            .find(|field| get_scoped_field(model_scope.to_string(), field,),);
         // fix it with Model
 
-        if let Some(s) = scope {
+        if let Some(s,) = scope {
             let scope_type = &mut s.ty.to_token_stream().to_string();
-            scope_type.retain(|c| !c.is_whitespace());
+            scope_type.retain(|c| !c.is_whitespace(),);
 
-            let ident = &s.ident.as_ref().expect("Should have get property name");
+            let ident = &s.ident.as_ref().expect("Should have get property name",);
             format!(
                 "fn {}({} : &{}) -> Option<bool> {{log!(\"Write condition\")}}",
                 guard,
@@ -118,19 +119,20 @@ mod test {
 
     const GUARD: &str = r###"fn guard(model : &Model) -> Option<bool> {log!("Write condition")}"###;
 
+    #[rustfmt::skip]
     const ADMIN_GUARD: &str = r###"fn admin_guard(logged_user : &Option<LoggedData>) -> Option<bool> {log!("Write condition")}"###;
 
     #[test]
     fn test_get_guards() {
-        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL).unwrap();
-        let model = find_model(&parsed_file);
-        let routes_enum = find_routes(&parsed_file);
+        let parsed_file = syn::parse_file(_FILE_WITH_ROUTES_AND_MODEL,).unwrap();
+        let model = find_model(&parsed_file,);
+        let routes_enum = find_routes(&parsed_file,);
 
-        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap(), "", "");
+        let content = SeedContent::new(routes_enum.unwrap(), model.unwrap(), "", "",);
 
-        let mut should_have: IndexMap<String, (String, SeedRoute)> = IndexMap::new();
+        let mut should_have: IndexMap<String, (String, SeedRoute,),> = IndexMap::new();
 
-        let guard = content.guards.get("guard").unwrap();
+        let guard = content.guards.get("guard",).unwrap();
         assert_eq!(guard.routes.len(), 2);
 
         assert_eq!(
@@ -155,7 +157,7 @@ mod test {
                 content_to_load: GUARD.to_string()
             }
         );
-        let admin_guard = content.guards.get("admin_guard").unwrap();
+        let admin_guard = content.guards.get("admin_guard",).unwrap();
         assert_eq!(
             admin_guard.routes[0],
             SeedRoute {
