@@ -1,8 +1,7 @@
 use crate::{
-    content::module::{import::ImportModule, SeedModule},
+    content::module::import::ImportModule,
     parser::{find_function, find_message, find_mod, find_model, find_routes},
 };
-use std::{fs::File, io::Read};
 
 pub struct Checker {
     source_file: syn::File,
