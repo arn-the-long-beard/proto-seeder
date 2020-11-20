@@ -1,3 +1,6 @@
+//! Manage module imports to write for Seed content and files to write with and
+//! without Folder
+
 use crate::content::module::ModuleMeta;
 
 const ERROR_WHEN_PATH_EMPTY: &str = "Cannot have empty path for directory";

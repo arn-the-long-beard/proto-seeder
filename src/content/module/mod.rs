@@ -1,3 +1,6 @@
+//! Manage files considered as SeedModule, where a SeedModule is a rust file
+//! that will contain the TEA content
+
 use crate::{content::SeedRoute, parser::view::get_view_attribute};
 use indexmap::map::IndexMap;
 
@@ -33,6 +36,8 @@ pub struct SeedModule {
     origin_route: Option<SeedRoute,>,
     meta: ModuleMeta,
 }
+
+/// Metadata used to import the file in parent module or other file
 #[derive(Debug, Clone)]
 pub struct ModuleMeta {
     /// For example could be /pages/login.rs or /login.rs or mod.rs
@@ -173,6 +178,9 @@ impl SeedModule {
         self
     }
 }
+
+/// Get the module to write depending of parser results for
+/// #[modules_path] attribute
 pub fn get_modules(
     routes_enum: ItemEnum,
     modules_path: Option<String,>,
@@ -253,6 +261,7 @@ pub fn get_modules(
     (map, parent_module.unwrap(),)
 }
 
+/// Generate meta for file imports for file depending of tree folder
 fn generate_module_meta(
     parent_module: ImportModule,
     name: &str,

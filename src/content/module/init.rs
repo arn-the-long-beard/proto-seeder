@@ -1,3 +1,5 @@
+//! Manage the build for fn init functions and the different arguments with it
+//! by reading from the parser
 use crate::content::SeedRoute;
 
 use crate::content::module::constants::{

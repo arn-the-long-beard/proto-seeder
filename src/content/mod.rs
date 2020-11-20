@@ -17,7 +17,7 @@ pub mod module;
 pub mod view;
 
 /// Routing Seed concept extracted from the parser
-/// This struct conains all thew views, guard, modules ( init ,views, update,
+/// This struct contains all thew views, guard, modules ( init ,views, update,
 /// Mdg, Model, Routes) for TEA
 #[derive(Debug)]
 pub struct SeedContent {
@@ -82,7 +82,7 @@ fn get_scoped_field(scope: String, field: &&Field,) -> bool {
         false
     }
 }
-/// todo maybe put field if guarded or not ?
+/// Route that loads a specific content
 #[derive(Debug, PartialEq, Clone)]
 pub struct SeedRoute {
     pub name: String,

@@ -1,3 +1,5 @@
+//! Contain extract of guards and redirect to write in SeedContent
+
 use crate::{
     content::{
         get_scoped_field,
