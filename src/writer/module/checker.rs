@@ -25,6 +25,8 @@ impl Checker {
         list
     }
 
+    /// Read the content of the file and parse it with syn so we can look for
+    /// content in it
     pub fn store_content_for_check(src: &str,) -> Checker {
         let parsed_file = syn::parse_file(&src,).expect(
             "Should read content
