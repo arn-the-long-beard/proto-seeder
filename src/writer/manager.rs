@@ -1,3 +1,4 @@
+//! Manage writing and update of content on files
 use crate::{
     content::{
         guard::SeedGuard,

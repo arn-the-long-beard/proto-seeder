@@ -1,3 +1,4 @@
+//! Check with syn the parsed file for content
 use crate::{
     content::module::import::ImportModule,
     parser::{find_function, find_message, find_mod, find_model, find_routes},
