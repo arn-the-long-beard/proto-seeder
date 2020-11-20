@@ -115,7 +115,7 @@ for file ",
 
 #[cfg(test)]
 mod test {
-    use crate::{constants::*, writer::module::checker::Checker};
+    use crate::{constants::*, writer::checker::Checker};
     #[test]
     fn test_if_exist_update() {
         let check = Checker::store_content_for_check(_FILE_WITHOUT_UPDATE,);

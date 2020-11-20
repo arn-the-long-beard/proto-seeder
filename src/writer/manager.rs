@@ -9,14 +9,10 @@ use crate::{
         SeedRoute,
     },
     writer,
-    writer::module::{checker::Checker, FileOperation, ModulesWriter},
+    writer::{checker::Checker, FileOperation, ModulesWriter},
 };
-use indexmap::map::{IndexMap, Iter, MutableKeys};
-use std::{
-    fs,
-    fs::{File, OpenOptions},
-    io::{Read, Write},
-};
+use indexmap::map::IndexMap;
+use std::io::{Read, Write};
 
 /// Manage the SeedContent on modules
 /// Uses the checker to know if need to create or ignore content

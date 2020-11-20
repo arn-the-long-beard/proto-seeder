@@ -6,7 +6,7 @@
 use crate::{
     content::SeedContent,
     parser::{find_model, find_routes},
-    writer::module::{manager::ContentManager, ModulesWriter},
+    writer::{manager::ContentManager, ModulesWriter},
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
