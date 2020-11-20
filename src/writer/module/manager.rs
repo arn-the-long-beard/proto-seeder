@@ -316,6 +316,7 @@ impl ContentManager {
         self
     }
 
+    /// Write local views on the targeted path
     fn write_local_views(&mut self, path: &str, views: &IndexMap<String, SeedView,>,) -> u32 {
         let mut updates_number = 0;
         for (view_name, view,) in views {
@@ -362,6 +363,7 @@ impl ContentManager {
         updates_number
     }
 
+    /// Write local guard and redirect on the targeted path
     fn write_local_guards(&mut self, path: &str, guards: &IndexMap<String, SeedGuard,>,) -> u32 {
         let mut updates_number = 0;
         for (guard_name, guard,) in guards {
