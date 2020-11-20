@@ -453,7 +453,9 @@ fn not_found(model: &Model) -> Node<Msg> {
 ```
 
 
-You should get the following output from the command line
+You should get the following output from this command: 
+
+`cargo run -- -g ./examples/backbone_app/src/lib.rs`
 
 
 ```
