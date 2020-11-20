@@ -1,20 +1,9 @@
-use crate::{
-    content::{
-        module::{
-            import::{ImportModule, ParentModuleType},
-            SeedModule,
-        },
-        SeedContent,
-    },
-    parser::*,
-    writer::module::{checker::Checker, manager::ContentManager},
-};
+use crate::content::SeedContent;
 use indexmap::map::IndexMap;
 use indicatif::ProgressBar;
 use std::{
     fs,
     fs::{File, OpenOptions},
-    io::{Read, Write},
 };
 
 pub mod checker;
@@ -76,7 +65,7 @@ impl ModulesWriter {
     /// Create a folder and update the state of the Writer with it
     /// log or or info
     fn create_folder(&mut self, path: &str,) -> &mut Self {
-        if let Ok(_,) = fs::create_dir(path,) {
+        if fs::create_dir(path,).is_ok() {
             self.log_ok(format!("created folder {}", path).as_str(),);
             self.folder_created.push(path.to_string(),);
         } else {
@@ -158,23 +147,4 @@ impl ModulesWriter {
     pub fn log_error(&mut self, msg: &str,) {
         self.pb.println(format!("[!] {}", msg).as_str(),);
     }
-
-    // pub fn get_number_of_created_file(&self) -> u32 {
-    //     let mut n = 0;
-    //     for (_, (op, _)) in self.files.iter() {
-    //         if op.eq(&FileOperation::Create) {
-    //             n += 1;
-    //         }
-    //     }
-    //     n
-    // }
-    // pub fn get_number_of_updated_file(&self) -> u32 {
-    //     let mut n = 0;
-    //     for (_, (op, _)) in self.files.iter() {
-    //         if op.eq(&FileOperation::Update) {
-    //             n += 1;
-    //         }
-    //     }
-    //     n
-    // }
 }
