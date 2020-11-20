@@ -100,6 +100,7 @@ impl ContentManager {
         self
     }
 
+    /// Manage the imports for files
     pub fn add_or_update_imports(&mut self,) -> &mut Self {
         let parent = self.writer.content.parent_module().clone();
         let path = parent.meta().filepath().to_string();
@@ -151,6 +152,13 @@ impl ContentManager {
         self
     }
 
+    /// Add the TEA content ->
+    /// - pub fn init
+    /// - pub struct Model
+    /// - pub enum Routes
+    /// - put enum Msg
+    /// - pub fn update
+    /// - pub fn view
     fn insert_content(&mut self, path: &str, module: SeedModule,) {
         const IMPORT_SEED: &str = r###"use seed::{prelude::*, *};"###;
         self.write_on_file(&path, format!("{}\n", IMPORT_SEED).as_str(),)
@@ -163,6 +171,8 @@ impl ContentManager {
         self.file_created += 1;
     }
 
+    /// Use the Checker to verify if content already exist and then update if
+    /// needed
     fn update_content_if_needed(&mut self, path: &str, src: &str, module: SeedModule,) {
         let check = Checker::store_content_for_check(src,);
         let mut number_update = 0;

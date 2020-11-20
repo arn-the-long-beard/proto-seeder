@@ -3,12 +3,14 @@ use crate::{
     parser::{find_function, find_message, find_mod, find_model, find_routes},
 };
 
+/// Check on parsed file for existing content
 pub struct Checker {
     source_file: syn::File,
     will_duplicate: Vec<String,>,
 }
 
 impl Checker {
+    /// Find existing mod import
     pub fn return_mod_if_exist(src: &str, parent_module: ImportModule,) -> Vec<String,> {
         let mut list: Vec<String,> = Vec::new();
 
@@ -67,31 +69,38 @@ for file ",
             .any(|c| *c == content_name,)
     }
 
-    /// todo all of this should be dynamic in the future
+    // todo all of this should be dynamic in the future
+    /// Check if fn init function exists
     pub fn init_exist(&self,) -> bool {
         self.check_duplicate("init",)
     }
 
+    /// Check if struct Model exists
     pub fn model_exist(&self,) -> bool {
         self.check_duplicate("Model",)
     }
 
+    /// Check if enum Routes exists
     pub fn routes_exist(&self,) -> bool {
         self.check_duplicate("Routes",)
     }
 
+    /// Check if enum Msg exists
     pub fn message_exist(&self,) -> bool {
         self.check_duplicate("Msg",)
     }
 
+    /// Check if fn update exists
     pub fn update_exist(&self,) -> bool {
         self.check_duplicate("update",)
     }
 
+    /// Check if fn view exists
     pub fn view_exist(&self,) -> bool {
         self.check_duplicate("view",)
     }
 
+    /// Check if a function with given name exists
     pub fn check_local_function_exist(name: &str, src: &str,) -> bool {
         let parsed_file = syn::parse_file(&src,).expect(
             "Should read content
