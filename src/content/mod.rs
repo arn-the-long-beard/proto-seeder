@@ -1,10 +1,10 @@
 use crate::{
     content::{
         guard::{get_guards, SeedGuard},
-        module::{get_modules, import::ImportModule, ModuleMeta, SeedModule},
+        module::{get_modules, import::ImportModule, SeedModule},
         view::{get_local_views, SeedView},
     },
-    parser::{module::modules_path, *},
+    parser::module::modules_path,
 };
 use indexmap::map::IndexMap;
 use syn::{Field, ItemEnum, ItemStruct};

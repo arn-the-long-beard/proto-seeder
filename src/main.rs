@@ -119,18 +119,9 @@ fn main() -> anyhow::Result<(),> {
             format!("creating local views on {}", &args.path.to_str().unwrap()).as_str(),
         );
 
-        let file =
-            OpenOptions::new()
-                .write(true,)
-                .append(true,)
-                .open(&args.path,)
-                .unwrap_or_else(|_| {
-                    panic!("Unable to update file , {}", &args.path.to_str().unwrap())
-                },);
-
         pb.set_message("Updating your files.",);
 
-        let mut writer = ModulesWriter::new(
+        let  writer = ModulesWriter::new(
             seed_content,
             pb,
             current_path.to_string(),

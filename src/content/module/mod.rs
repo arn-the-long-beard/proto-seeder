@@ -12,8 +12,7 @@ use crate::content::module::{
     },
 };
 use convert_case::{Case, Casing};
-use std::borrow::BorrowMut;
-use syn::{Field, Fields, ItemEnum, Variant};
+use syn::{Fields, ItemEnum, Variant};
 
 pub mod import;
 mod init;
@@ -64,16 +63,16 @@ impl ModuleMeta {
         self.import_file_location = import_file_location;
     }
 
-    pub fn filepath(&self,) -> &str {
-        &self.filepath
-    }
-
     pub fn mod_import(&self,) -> &str {
         &self.mod_import
     }
 
     pub fn import_file_location(&self,) -> &str {
         &self.import_file_location
+    }
+
+    pub fn filepath(&self,) -> &str {
+        &self.filepath
     }
 }
 
@@ -180,13 +179,8 @@ pub fn get_modules(
     root_path_file: &str,
     target_file_path: &str,
 ) -> (IndexMap<String, SeedModule,>, ImportModule,) {
-    let mut parent_module = if modules_path.is_some() {
-        ImportModule::new_folder_module(
-            modules_path.unwrap().as_str(),
-            root_path_file,
-            target_file_path,
-        )
-        .ok()
+    let mut parent_module = if let Some(path,) = modules_path {
+        ImportModule::new_folder_module(path.as_str(), root_path_file, target_file_path,).ok()
     } else {
         ImportModule::new_target_file_module(root_path_file, target_file_path,).ok()
     };
