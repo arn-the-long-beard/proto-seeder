@@ -5,9 +5,8 @@ use crate::content::SeedRoute;
 use crate::content::module::constants::{
     _NESTED_INIT_TEMPLATE, _PAYLOAD_INIT_TEMPLATE, _SIMPLE_INIT_TEMPLATE,
 };
-use convert_case::{Case, Casing};
 use proc_macro2::Ident;
-use syn::{punctuated::Iter, Field, Fields, ItemEnum, Variant};
+use syn::{punctuated::Iter, Field};
 
 pub fn get_init_for_unit_variant(ident: Ident,) -> (String, SeedRoute,) {
     let template = _SIMPLE_INIT_TEMPLATE;
@@ -24,7 +23,7 @@ pub fn get_init_for_unit_variant(ident: Ident,) -> (String, SeedRoute,) {
     )
 }
 
-pub fn get_init_for_tuple_variant(ident: Ident, fields: Iter<'_, Field,>,) -> (String, SeedRoute,) {
+pub fn get_init_for_tuple_variant(ident: Ident, _: Iter<'_, Field,>,) -> (String, SeedRoute,) {
     // todo maybe passing type could be great
     // let first_field = fields.clone().next();
     // let mut scope_type = first_field
@@ -125,17 +124,16 @@ mod test {
     use crate::{
         content::{
             module::{constants::*, get_modules, SeedModule},
-            SeedContent, SeedRoute,
+            SeedRoute,
         },
-        find_model, find_routes,
+        find_routes,
     };
     use indexmap::map::IndexMap;
     use syn::ItemEnum;
 
     fn get_routes(enum_string: &str,) -> ItemEnum {
         let parsed_file = syn::parse_file(enum_string,).unwrap();
-        let routes = find_routes(&parsed_file,).expect("should have got the route",);
-        routes
+        find_routes(&parsed_file,).expect("should have got the route",)
     }
 
     fn get_result(expected_template: &str,) -> String {
