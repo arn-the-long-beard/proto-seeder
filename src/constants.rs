@@ -1,3 +1,5 @@
+//! Constants use for integration test of the cli
+
 pub const _FILE_WITH_ROUTES_AND_MODEL: &str = r###"
     
 // ------ ------

@@ -1,3 +1,6 @@
+//! Manage TEA content templates and the need to write from reading the Routes
+//! enum with the Parser
+
 use crate::{
     content::{
         guard::{get_guards, SeedGuard},
