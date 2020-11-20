@@ -7,9 +7,7 @@ use crate::{
             SeedModule,
         },
         view::SeedView,
-        SeedRoute,
     },
-    writer,
     writer::{checker::Checker, FileOperation, ModulesWriter},
 };
 use indexmap::map::IndexMap;
