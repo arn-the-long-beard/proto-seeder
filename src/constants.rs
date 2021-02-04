@@ -1,4 +1,4 @@
-//! Constants use for tests of the cli
+//! Constants use for tests.
 
 pub(crate) const _FILE_WITH_ROUTES_AND_MODEL: &str = r###"
     
