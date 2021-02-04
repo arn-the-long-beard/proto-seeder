@@ -192,10 +192,17 @@ fn not_found(model: &Model) -> Node<Msg> {
 ```
 
 
-You should get the following output from this command: 
+You should get the following output from this command at root of your project: 
 
-`cargo run -- -g ./examples/backbone_app/src/lib.rs`
+`proto_seeder ./src/lib.rs`
 
+if you go to `/src`  and run : 
+
+`proto_seeder lib.rs`
+
+Will not work because of https://github.com/arn-the-long-beard/proto-seeder/issues/1
+
+Here is an example of output with the example.
 
 ```
 -> found 3 locals view to create
