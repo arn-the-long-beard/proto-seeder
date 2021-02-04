@@ -25,13 +25,15 @@ mod writer;
 /// Generate code from the Routes enum from the given file
 #[derive(StructOpt, Debug)]
 struct Cli {
-    /// Will parse the given file and generate views, guards and modules from
-    /// the Routes enum in the given file
+    /// Will find every routes in the folder and generate views, guards and modules from
+    /// ## Not implemented ##
+    ///
     #[structopt(short, long)]
-    generate: bool,
+    recursive: bool,
 
     /// Test debug mode
     /// For now this is dummy , we need to add log level later
+    /// ## Not implemented ##
     #[structopt(short, long)]
     debug: bool,
     /// The path to the file to read
@@ -42,7 +44,7 @@ struct Cli {
 fn main() -> anyhow::Result<(),> {
     let args: Cli = Cli::from_args();
 
-    if args.generate {}
+    if args.recursive {}
 
     let pb = ProgressBar::new_spinner();
     pb.enable_steady_tick(120,);
