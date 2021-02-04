@@ -191,7 +191,7 @@ pub const _UPDATE_COMMENT: &str = r###"
 "###;
 
 pub const _UPDATE_TEMPLATE: &str = r###"
-fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg,>,)
+pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg,>,)
 {
 
 }
