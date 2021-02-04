@@ -10,7 +10,7 @@ categories = ["command-line-utilities"]
 homepage = "https://github.com/arn-the-long-beard/proto-seeder"
 documentation = "https://github.com/arn-the-long-beard/proto-seeder"
 readme = "README.md"
-exclude=["./examples"]
+exclude=["examples/*"]
 autoexamples = false
 
 [dependencies]
