@@ -1,5 +1,5 @@
 # proto-seeder
-A prototype to integrate to seeder later
+A prototype to integrate to seeder later.
 
 
 # Description
