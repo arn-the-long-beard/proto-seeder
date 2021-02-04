@@ -1,7 +1,7 @@
 [package]
 name = "proto_seeder"
 description = "Cli to create files from Routes with seed_routing"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["arn-the-long-beard <arn.menant@gmail.com>"]
 edition = "2018"
 license = "MIT"
