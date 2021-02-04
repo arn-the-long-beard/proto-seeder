@@ -1,6 +1,6 @@
-//! Constants use for integration test of the cli
+//! Constants use for tests of the cli
 
-pub const _FILE_WITH_ROUTES_AND_MODEL: &str = r###"
+pub(crate) const _FILE_WITH_ROUTES_AND_MODEL: &str = r###"
     
 // ------ ------
 //     Init
@@ -66,7 +66,7 @@ pub enum Routes {
 }
  "###;
 
-pub const _FILE_WITH_ROUTES_AND_MODEL_WITHOUT_PAGES: &str = r###"
+pub(crate) const _FILE_WITH_ROUTES_AND_MODEL_WITHOUT_PAGES: &str = r###"
     
 // ------ ------
 //     Init
@@ -131,7 +131,7 @@ pub enum Routes {
 }
  "###;
 
-pub const _FILE_WITHOUT_ROUTES_NOR_MODEL: &str = r###"
+pub(crate) const _FILE_WITHOUT_ROUTES_NOR_MODEL: &str = r###"
     
 // ------ ------
 //     Init
@@ -157,7 +157,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg,>,) -> Model {
 }
  "###;
 
-pub const _FILE_WITHOUT_UPDATE: &str = r###"
+pub(crate) const _FILE_WITHOUT_UPDATE: &str = r###"
     
 // ------ ------
 //     Init
@@ -231,7 +231,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 }
 
  "###;
-pub const _FILE_WITH_GUARD: &str = r###"
+pub(crate) const _FILE_WITH_GUARD: &str = r###"
     
 // ------ ------
 //     Init
