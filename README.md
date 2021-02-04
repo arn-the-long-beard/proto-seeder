@@ -1,5 +1,6 @@
 # proto-seeder
-A prototype to integrate to seeder later.
+A Cli prototype to integrate to seeder later.
+It generates files and methods for a Seed app from a `Route` `enum`.
 
 
 # Description
