@@ -1,4 +1,4 @@
-//! Parser that share similarities with code in [seed_routing](https://github.com/arn-the-long-beard/seed-routing)
+//! Parser that share similarities with code in [seed_routing](https://github.com/arn-the-long-beard/seed-routing).
 //! It will extract variants and attributes from Routes enum.
 
 use syn::{
