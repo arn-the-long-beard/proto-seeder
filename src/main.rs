@@ -10,7 +10,7 @@ use crate::{
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
-    fs::{File, OpenOptions},
+    fs::{File},
     io::Read,
 };
 use structopt::StructOpt;

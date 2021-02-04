@@ -20,7 +20,6 @@ use crate::content::module::{
         update::{_UPDATE_COMMENT, _UPDATE_TEMPLATE},
         view::{_VIEW_COMMENT, _VIEW_TEMPLATE, _VIEW_TEMPLATE_WITH_ROUTES},
     },
-    test_constants::*,
 };
 use convert_case::{Case, Casing};
 use syn::{Fields, ItemEnum, Variant};
@@ -204,7 +203,7 @@ pub fn get_modules(
     let mut map: IndexMap<String, SeedModule,> = IndexMap::new();
     for v in routes_enum.variants.iter() {
         let Variant {
-            attrs,
+            attrs: _,
             ident,
             fields,
             ..

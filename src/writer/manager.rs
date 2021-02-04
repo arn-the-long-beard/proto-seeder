@@ -114,8 +114,8 @@ impl ContentManager {
                     .create_folder(import_module.folder_path(),)
                     .create_or_update_file(path.clone(),);
 
-                /// should be recursive but work only with lib.rs as
-                /// import_module of the folder for now
+                // should be recursive but work only with lib.rs as.
+                // import_module of the folder for now.
                 if !import_module.meta().clone().mod_import().is_empty() {
                     eprintln!("---------- detected module folder ");
 

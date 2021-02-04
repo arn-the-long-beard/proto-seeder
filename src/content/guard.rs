@@ -10,7 +10,7 @@ use crate::{
     parser::view::get_guard_attribute,
 };
 use indexmap::map::IndexMap;
-use syn::{export::ToTokens, Field, ItemEnum, ItemStruct};
+use syn::{export::ToTokens, ItemEnum, ItemStruct};
 
 #[derive(Debug, Clone)]
 pub struct SeedGuard {
