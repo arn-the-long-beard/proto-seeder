@@ -76,60 +76,58 @@ pub fn get_guards(routes_enum: &ItemEnum, model: ItemStruct,) -> IndexMap<String
 
 /// todo add Model extractor to match the scope
 pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct,) -> String {
+    let scope = if model_scope.is_empty() {
+        None
+    } else {
+        model
+            .fields
+            .iter()
+            .find(|field| get_scoped_field(model_scope.to_string(), field,),)
+    };
+    // fix it with Model
+    let template = _GUARD_TEMPLATE;
 
-        let scope = if model_scope.is_empty()
-        {
-            None
-        } else {
+    let payload = match scope {
+        None => {
+            println!(
+                "scope {} not found on Model {} so we inject Model instead",
+                model_scope, model.ident
+            );
+            "model : &Model".to_string()
+        },
+        Some(s,) => {
+            let scope_type = &mut s.ty.to_token_stream().to_string();
+            scope_type.retain(|c| !c.is_whitespace(),);
 
-            model
-                .fields
-                .iter()
-                .find(|field| get_scoped_field(model_scope.to_string(), field,),)
-        };
-        // fix it with Model
-        let template = _GUARD_TEMPLATE;
+            let ident = &s.ident.as_ref().expect("Should have get property name",);
+            format!("{} : &{}", ident.to_string(), scope_type,)
+        },
+    };
 
-        let payload = match scope {
-            None => {
-                println!(
-                    "scope {} not found on Model {} so we inject Model instead",
-                    model_scope, model.ident
-                );
-                "model : &Model".to_string()
-            },
-            Some(s, ) => {
-                let scope_type = &mut s.ty.to_token_stream().to_string();
-                scope_type.retain(|c| !c.is_whitespace(), );
-
-                let ident = &s.ident.as_ref().expect("Should have get property name", );
-                format!(
-                    "{} : &{}",
-                    ident.to_string(),
-                    scope_type,
-                )
-            }
-        };
-
-       template
-            .replace("PAYLOAD", payload.as_str(),)
-            .replace("GUARD_NAME", guard)
-        }
-
+    template
+        .replace("PAYLOAD", payload.as_str(),)
+        .replace("GUARD_NAME", guard,)
+}
 
 #[cfg(test)]
 mod test {
     use crate::{
         constants::_FILE_WITH_ROUTES_AND_MODEL,
-        content::{SeedContent, SeedRoute},
+        content::{module::templates::guard::_GUARD_TEMPLATE, SeedContent, SeedRoute},
         find_model, find_routes,
     };
     use indexmap::map::IndexMap;
 
-    const GUARD: &str = r###"fn guard(model : &Model) -> Option<bool> {log!("Write condition")}"###;
-
-    #[rustfmt::skip]
-    const ADMIN_GUARD: &str = r###"fn admin_guard(logged_user : &Option<LoggedData>) -> Option<bool> {log!("Write condition")}"###;
+    fn get_guard() -> String {
+        _GUARD_TEMPLATE
+            .replace("PAYLOAD", "model : &Model",)
+            .replace("GUARD_NAME", "guard",)
+    }
+    fn get_admin_guard() -> String {
+        _GUARD_TEMPLATE
+            .replace("PAYLOAD", "logged_user : &Option<LoggedData>",)
+            .replace("GUARD_NAME", "admin_guard",)
+    }
 
     #[test]
     fn test_get_guards() {
@@ -152,7 +150,7 @@ mod test {
                 children: false,
                 id_param: false,
                 query: false,
-                content_to_load: GUARD.to_string()
+                content_to_load: get_guard()
             }
         );
         assert_eq!(
@@ -163,7 +161,7 @@ mod test {
                 children: false,
                 id_param: false,
                 query: false,
-                content_to_load: GUARD.to_string()
+                content_to_load: get_guard()
             }
         );
         let admin_guard = content.guards.get("admin_guard",).unwrap();
@@ -175,7 +173,7 @@ mod test {
                 children: false,
                 id_param: false,
                 query: false,
-                content_to_load: ADMIN_GUARD.to_string()
+                content_to_load: get_admin_guard()
             }
         );
 
