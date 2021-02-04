@@ -136,7 +136,11 @@ impl ContentManager {
                 }
             },
         }
-        let (op, file,) = self.writer.files.get_mut(&path,).unwrap();
+        let (op, file,) = self
+            .writer
+            .files
+            .get_mut(&path,)
+            .expect(&*format!("should have get the file at the path {}", &path),);
         let mut imports = import_module.imports_to_write();
         match op {
             FileOperation::Update => {
