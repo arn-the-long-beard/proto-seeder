@@ -1,5 +1,5 @@
 //! Manage the build for fn init functions and the different arguments with it
-//! by reading from the parser
+//! by reading from the parser.
 use crate::content::SeedRoute;
 
 use crate::content::module::templates::init::{
@@ -83,8 +83,8 @@ pub fn get_init_for_init_struct_variant(
         },
     )
 }
-/// write the payload from the variant into the init
-/// todo maybe could in the future extract the type from the fields instead
+/// Write the payload from the variant into the init.
+/// todo maybe could in the future extract the type from the fields instead.
 pub fn inject_variant_payload_in_function_call(
     structs_tuple: (Option<&Field,>, Option<&Field,>, Option<&Field,>,),
 ) -> String {

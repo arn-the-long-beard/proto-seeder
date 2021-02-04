@@ -1,4 +1,4 @@
-//! Get local views to write in SeedContent
+//! Get local views to write in SeedContent.
 use crate::{
     content::{get_scoped_field, SeedRoute},
     parser::view::get_view_attribute,

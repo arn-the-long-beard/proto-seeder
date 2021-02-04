@@ -1,7 +1,7 @@
 //! # proto_seeder
 //!
 //! `proto_seeder` is a experimental cli that generate Seed code based on
-//! routing from [seed_routing](https://github.com/arn-the-long-beard/seed-routing) with RoutingModules
+//! routing from [seed_routing](https://github.com/arn-the-long-beard/seed-routing) with RoutingModules.
 
 use crate::{
     content::SeedContent,
@@ -25,18 +25,18 @@ mod writer;
 /// Generate code from the Routes enum from the given file
 #[derive(StructOpt, Debug)]
 struct Cli {
-    /// Will find every routes in the folder and generate views, guards and modules from
+    /// Will find every routes in the folder and generate views, guards and modules from.
     /// ## Not implemented ##
     ///
     #[structopt(short, long)]
     recursive: bool,
 
     /// Test debug mode
-    /// For now this is dummy , we need to add log level later
+    /// For now this is dummy , we need to add log level later.
     /// ## Not implemented ##
     #[structopt(short, long)]
     debug: bool,
-    /// The path to the file to read
+    /// The path to the file to read.
     #[structopt(parse(from_os_str))]
     path: std::path::PathBuf,
 }

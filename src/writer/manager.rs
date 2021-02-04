@@ -1,4 +1,4 @@
-//! Manage writing and update of content on files
+//! Manage writing and update of content on files.
 use crate::{
     content::{
         guard::SeedGuard,
@@ -13,18 +13,18 @@ use crate::{
 use indexmap::map::IndexMap;
 use std::io::{Read, Write};
 
-/// Manage the SeedContent on modules
-/// Uses the checker to know if need to create or ignore content
+/// Manage the SeedContent on modules.
+/// Uses the checker to know if need to create or ignore content.
 pub struct ContentManager {
     pub file_ignored: u32,
     pub file_created: u32,
     pub file_updated: u32,
-    /// The module writer manage the creation, reading and update of files
+    /// The module writer manage the creation, reading and update of files.
     pub writer: ModulesWriter,
 }
 
 impl ContentManager {
-    /// Use the writer to access file and update their content
+    /// Use the writer to access file and update their content.
     pub fn new(writer: ModulesWriter,) -> ContentManager {
         ContentManager {
             file_ignored: 0,
@@ -34,9 +34,9 @@ impl ContentManager {
         }
     }
 
-    /// wrote on the file for given path and content with custom message
-    /// Log ok or error
-    /// State updated
+    /// Wrote on the file for given path and content with custom message.
+    /// Log ok or error.
+    /// State updated.
     fn write_on_file_with_custom_message(
         &mut self,
         file_path: &str,
@@ -69,10 +69,10 @@ impl ContentManager {
         self
     }
 
-    /// Write on the file for given path and content
-    /// Log ok or error
-    /// State updated
-    /// //TODO could save error state
+    /// Write on the file for given path and content.
+    /// Log ok or error.
+    /// State updated.
+    /// //TODO could save error state.
     fn write_on_file(&mut self, file_path: &str, file_content: &str,) -> &mut Self {
         if let Some((_, file,),) = self.writer.files.get_mut(file_path,) {
             if let Err(e,) = file.write_all(file_content.as_ref(),) {
@@ -99,7 +99,7 @@ impl ContentManager {
         self.add_or_update_imports_from_module(self.writer.content.parent_module().clone(),)
     }
 
-    /// Manage the imports for files
+    /// Manage the imports for files.
     fn add_or_update_imports_from_module(&mut self, import_module: ImportModule,) -> &mut Self {
         let path = import_module.meta().filepath().to_string();
 
@@ -174,12 +174,13 @@ impl ContentManager {
     }
 
     /// Add the TEA content ->
-    /// - pub fn init
-    /// - pub struct Model
-    /// - pub enum Routes
-    /// - put enum Msg
-    /// - pub fn update
-    /// - pub fn view
+    /// - add necessary imports.
+    /// - pub fn init.
+    /// - pub struct Model.
+    /// - pub enum Routes.
+    /// - put enum Msg.
+    /// - pub fn update.
+    /// - pub fn view.
     fn insert_content(&mut self, path: &str, module: SeedModule,) {
         const IMPORT_SEED: &str = r###"use seed::{prelude::*, *};"###;
         const IMPORT_SEED_ROUTING: &str = r###"use seed_routing::*;"###;
@@ -266,7 +267,7 @@ impl ContentManager {
     }
 
     /// Replace the existing imports.
-    /// This is so dirty code. I dislike it
+    /// TODO : need to improve this dirty code.
     fn update_imports_to_write(
         &mut self,
         imports: &str,
@@ -294,7 +295,7 @@ impl ContentManager {
         new_imports.trim().to_string()
     }
 
-    /// Will check if content already exist and create or merge
+    /// Will check if content already exist and create or merge.
     pub fn add_or_update_content(&mut self,) -> &mut Self {
         let map = self.writer.content.modules().clone();
         let iter = map.iter();
@@ -324,8 +325,8 @@ impl ContentManager {
         self
     }
 
-    /// For writing guard and local view on the target file
-    /// Could be extended for custom content maybe on any modules
+    /// For writing guard and local view on the target file.
+    /// Could be extended for custom content maybe on any modules.
     pub fn add_or_update_local_content(&mut self,) -> &mut Self {
         let path = self.writer.target_file_path.to_string();
         let views = self.writer.content.local_views().clone();
@@ -339,7 +340,7 @@ impl ContentManager {
         self
     }
 
-    /// Write local views on the targeted path
+    /// Write local views on the targeted path.
     fn write_local_views(&mut self, path: &str, views: &IndexMap<String, SeedView,>,) -> u32 {
         let mut updates_number = 0;
         for (view_name, view,) in views {
@@ -386,7 +387,7 @@ impl ContentManager {
         updates_number
     }
 
-    /// Write local guard and redirect on the targeted path
+    /// Write local guard and redirect on the targeted path.
     fn write_local_guards(&mut self, path: &str, guards: &IndexMap<String, SeedGuard,>,) -> u32 {
         let mut updates_number = 0;
         for (guard_name, guard,) in guards {

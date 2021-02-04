@@ -1,5 +1,5 @@
 //! Manage files considered as SeedModule, where a SeedModule is a rust file
-//! that will contain the TEA content
+//! that will contain the TEA content.
 
 use crate::{content::SeedRoute, parser::view::get_view_attribute};
 use indexmap::map::IndexMap;
@@ -44,21 +44,21 @@ pub struct SeedModule {
     meta: ModuleMeta,
 }
 
-/// Metadata used to import the file in parent module or other file
+/// Metadata used to import the file in parent module or other file.
 #[derive(Debug, Clone)]
 pub struct ModuleMeta {
-    /// For example could be /pages/login.rs or /login.rs or mod.rs
+    /// For example could be /pages/login.rs or /login.rs or mod.rs.
     filepath: String,
     /// The string that represent the import such as `mod login;`
     /// Ex: If module is login ->  'pub mod login;' if sub directory -> 'mod
     /// login;'
     /// if empty, it means the module is not reexported. This is expected
-    /// behavior if we import directly in the target file
+    /// behavior if we import directly in the target file.
     mod_import: String,
     /// Where the import should be written
     /// Ex: If parent directory, ->  'mod.rs' if  not ->  lib.rs
     /// if empty, it means the module is not reexported. This is expected
-    /// behavior if we import directly in the target file
+    /// behavior if we import directly in the target file.
     import_file_location: String,
 }
 
@@ -142,19 +142,19 @@ impl Default for SeedModule {
 }
 
 impl SeedModule {
-    /// Set the view, replace if any
+    /// Set the view, replace if any.
     pub fn set_view(&mut self, view_function: String,) -> &mut SeedModule {
         self.view = view_function;
         self
     }
 
-    //// set the init , replace if any
+    //// set the init , replace if any.
     pub fn set_init(&mut self, init_function: String,) -> &mut SeedModule {
         self.init = init_function;
         self
     }
 
-    //// set the Updat,e replace if any
+    //// set the Updat,e replace if any.
     pub fn set_update(&mut self, update_function: String,) -> &mut SeedModule {
         self.update = update_function;
         self
@@ -187,7 +187,7 @@ impl SeedModule {
 }
 
 /// Get the module to write depending of parser results for
-/// #[modules_path] attribute
+/// #[modules_path] attribute.
 pub fn get_modules(
     routes_enum: ItemEnum,
     modules_path: Option<String,>,
@@ -268,7 +268,7 @@ pub fn get_modules(
     (map, parent_module.unwrap(),)
 }
 
-/// Generate meta for file imports for file depending of tree folder
+/// Generate meta for file imports for file depending of tree folder.
 fn generate_module_meta(
     parent_module: ImportModule,
     name: &str,

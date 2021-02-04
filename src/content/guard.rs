@@ -1,4 +1,4 @@
-//! Contain extract of guards and redirect to write in SeedContent
+//! Contain extract of guards and redirect to write in SeedContent.
 
 use crate::{
     content::{

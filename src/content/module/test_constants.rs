@@ -1,4 +1,4 @@
-//! Contains string for unit test and Template for writting content
+//! Contains string for unit test and Template for writing content.
 
 pub const _SIMPLE_ROUTE: &str = r###"
 #[derive(Debug, PartialEq, Clone, RoutingModules)]

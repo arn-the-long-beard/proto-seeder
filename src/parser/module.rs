@@ -4,7 +4,7 @@ use crate::parser::get_string_from_attribute;
 use syn::Attribute;
 
 /// Check the #[modules_path = "MY_DIRECTORY"] attribute
-/// If present, then we will build a module and imports
+/// If present, then we will build a module and imports.
 pub fn modules_path(attrs: &std::slice::Iter<'_, Attribute,>,) -> Option<String,> {
     let mut attrs =
         attrs.clone().filter_map(
