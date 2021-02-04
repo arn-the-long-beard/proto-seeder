@@ -2,7 +2,7 @@
 //! by reading from the parser
 use crate::content::SeedRoute;
 
-use crate::content::module::constants::{
+use crate::content::module::templates::init::{
     _NESTED_INIT_TEMPLATE, _PAYLOAD_INIT_TEMPLATE, _SIMPLE_INIT_TEMPLATE,
 };
 use proc_macro2::Ident;
@@ -123,7 +123,7 @@ pub fn inject_variant_payload_in_function_call(
 mod test {
     use crate::{
         content::{
-            module::{constants::*, get_modules, SeedModule},
+            module::{get_modules, templates::init::_INIT_COMMENT, test_constants::*, SeedModule},
             SeedRoute,
         },
         find_routes,

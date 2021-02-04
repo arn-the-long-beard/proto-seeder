@@ -5,14 +5,22 @@ use crate::{content::SeedRoute, parser::view::get_view_attribute};
 use indexmap::map::IndexMap;
 
 #[rustfmt::skip]
-mod constants;
-
+mod test_constants;
+mod templates;
 use crate::content::module::{
-    constants::*,
     import::{ImportModule, ParentModuleType},
     init::{
         get_init_for_init_struct_variant, get_init_for_tuple_variant, get_init_for_unit_variant,
     },
+    templates::{
+        init::_INIT_COMMENT,
+        message::{_MESSAGE_COMMENT, _MESSAGE_TEMPLATE},
+        model::{_MODEL_COMMENT, _MODEL_TEMPLATE},
+        route::{_ROUTES_COMMENT, _ROUTES_TEMPLATE},
+        update::{_UPDATE_COMMENT, _UPDATE_TEMPLATE},
+        view::{_VIEW_COMMENT, _VIEW_TEMPLATE, _VIEW_TEMPLATE_WITH_ROUTES},
+    },
+    test_constants::*,
 };
 use convert_case::{Case, Casing};
 use syn::{Fields, ItemEnum, Variant};

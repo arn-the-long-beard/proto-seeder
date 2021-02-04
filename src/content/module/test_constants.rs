@@ -65,34 +65,6 @@ pub enum Routes {
     }
 "###;
 
-// -------------- INIT CONST ------------
-// ------ ------
-//     Init
-// ------ ------
-pub const _INIT_COMMENT: &str = r###"
-// ------ ------
-//     Init
-// ------ ------
-
-"###;
-
-pub const _SIMPLE_INIT_TEMPLATE: &str = r###"
- pub fn init(url:Url, previous_state: Model, orders: &mut impl Orders<Msg,> ) {
-       log!("init for TEMPLATE");
-       }
-"###;
-
-pub const _NESTED_INIT_TEMPLATE: &str = r###"
- pub fn init(url:Url, previous_state: Model, nested: Routes, orders: &mut impl Orders<Msg,> ) {
-       log!("init for TEMPLATE");
-       }
-"###;
-
-pub const _PAYLOAD_INIT_TEMPLATE: &str = r###"
- pub fn init(url:Url, previous_state: Model, PAYLOAD, orders: &mut impl Orders<Msg,> ) {
-       log!("init for TEMPLATE");
-       }
-"###;
 
 // -------------- INIT CONST for Tests------------
 pub const _SIMPLE_INIT: &str = r###"
@@ -149,91 +121,8 @@ pub const _INIT_WITH_CHILDREN: &str = r###"
        }
 "###;
 
-// ------ ------
-//     Model
-// ------ ------
 
-pub const _MODEL_COMMENT: &str = r###"
-// ------ ------
-//     Model
-// ------ ------
 
-"###;
 
-pub const _MODEL_TEMPLATE: &str = r###"
- pub struct Model {}
-"###;
 
-// ------ ------
-//     Message
-// ------ ------
 
-pub const _MESSAGE_COMMENT: &str = r###"
-// ------ ------
-//     Message
-// ------ ------
-
-"###;
-
-pub const _MESSAGE_TEMPLATE: &str = r###"
- pub enum Msg {}
-"###;
-
-// ------ ------
-//     Update
-// ------ ------
-
-pub const _UPDATE_COMMENT: &str = r###"
-// ------ ------
-//     UPDATE
-// ------ ------
-
-"###;
-
-pub const _UPDATE_TEMPLATE: &str = r###"
-pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg,>,)
-{
-
-}
-"###;
-
-// ------ ------
-//     View
-// ------ ------
-
-pub const _VIEW_COMMENT: &str = r###"
-// ------ ------
-//     VIEW
-// ------ ------
-
-"###;
-
-pub const _VIEW_TEMPLATE: &str = r###"
- pub fn view(model_: &Model) -> Node<Msg> {
- div![""]
- }
-"###;
-
-pub const _VIEW_TEMPLATE_WITH_ROUTES: &str = r###"
- pub fn view(model_: &Model, nested: &Routes) -> Node<Msg> {
- div![""]
- }
-"###;
-
-// ------ ------
-//     Message
-// ------ ------
-
-pub const _ROUTES_COMMENT: &str = r###"
-// ------ ------
-//     Routes
-// ------ ------
-
-"###;
-
-pub const _ROUTES_TEMPLATE: &str = r###"
-#[derive(Debug, PartialEq, Clone, RoutingModules)]
- pub enum Routes {
-
- }
-"###;
