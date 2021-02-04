@@ -82,7 +82,7 @@ fn get_scoped_field(scope: String, field: &&Field,) -> bool {
         false
     }
 }
-/// Route that loads a specific content
+/// Route that loads a specific content.
 #[derive(Debug, PartialEq, Clone)]
 pub struct SeedRoute {
     pub name: String,
