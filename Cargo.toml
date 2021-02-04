@@ -1,12 +1,14 @@
 [package]
 name = "proto_seeder"
-description = "Cli to create files from Routes"
+description = "Cli to create files from Routes with seed_routing"
 version = "0.0.1"
 authors = ["arn-the-long-beard <arn.menant@gmail.com>"]
 edition = "2018"
 license = "MIT"
-#homepage = ""
-#documentation = ""
+keywords = ["cli", "seed", "generation","routing"]
+categories = ["command-line-utilities"]
+#homepage = "https://github.com/arn-the-long-beard/proto-seeder"
+#documentation = "https://github.com/arn-the-long-beard/proto-seeder"
 readme = "README.md"
 exclude=["./examples"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
