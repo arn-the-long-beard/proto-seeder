@@ -3,13 +3,14 @@
 use crate::{
     content::{
         get_scoped_field,
+        module::templates::guard::_GUARD_TEMPLATE,
         view::{get_view_function, SeedView},
         SeedRoute,
     },
     parser::view::get_guard_attribute,
 };
 use indexmap::map::IndexMap;
-use syn::{export::ToTokens, ItemEnum, ItemStruct};
+use syn::{export::ToTokens, Field, ItemEnum, ItemStruct};
 
 #[derive(Debug, Clone)]
 pub struct SeedGuard {
@@ -75,41 +76,47 @@ pub fn get_guards(routes_enum: &ItemEnum, model: ItemStruct,) -> IndexMap<String
 
 /// todo add Model extractor to match the scope
 pub fn get_guard_function(model_scope: &str, guard: &str, model: &ItemStruct,) -> String {
-    if model_scope.is_empty() {
-        format!(
-            "fn {}(model : &Model) -> Option<bool> {{log!(\"Write condition\")}}",
-            guard,
-        )
-    } else {
-        let scope = model
-            .fields
-            .iter()
-            .find(|field| get_scoped_field(model_scope.to_string(), field,),);
-        // fix it with Model
 
-        if let Some(s,) = scope {
-            let scope_type = &mut s.ty.to_token_stream().to_string();
-            scope_type.retain(|c| !c.is_whitespace(),);
-
-            let ident = &s.ident.as_ref().expect("Should have get property name",);
-            format!(
-                "fn {}({} : &{}) -> Option<bool> {{log!(\"Write condition\")}}",
-                guard,
-                ident.to_string(),
-                scope_type,
-            )
+        let scope = if model_scope.is_empty()
+        {
+            None
         } else {
-            println!(
-                "scope {} not found on Model {} so we inject Model instead",
-                model_scope, model.ident
-            );
-            format!(
-                "fn {}(model : &Model) -> Option<bool> {{log!(\"Write condition\")}}",
-                guard,
-            )
+
+            model
+                .fields
+                .iter()
+                .find(|field| get_scoped_field(model_scope.to_string(), field,),)
+        };
+        // fix it with Model
+        let template = _GUARD_TEMPLATE;
+
+        let payload = match scope {
+            None => {
+                println!(
+                    "scope {} not found on Model {} so we inject Model instead",
+                    model_scope, model.ident
+                );
+                "model : &Model".to_string()
+            },
+            Some(s, ) => {
+                let scope_type = &mut s.ty.to_token_stream().to_string();
+                scope_type.retain(|c| !c.is_whitespace(), );
+
+                let ident = &s.ident.as_ref().expect("Should have get property name", );
+                format!(
+                    "{} : &{}",
+                    ident.to_string(),
+                    scope_type,
+                )
+            }
+        };
+
+       template
+            .replace("PAYLOAD", payload.as_str(),)
+            .replace("GUARD_NAME", guard)
         }
-    }
-}
+
+
 #[cfg(test)]
 mod test {
     use crate::{

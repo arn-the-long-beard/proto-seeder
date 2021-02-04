@@ -6,7 +6,7 @@ use indexmap::map::IndexMap;
 
 #[rustfmt::skip]
 mod test_constants;
-mod templates;
+pub mod templates;
 use crate::content::module::{
     import::{ImportModule, ParentModuleType},
     init::{
