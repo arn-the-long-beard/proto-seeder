@@ -47,7 +47,7 @@ pub enum Routes {
     },
     #[guard = " => guard => forbidden"]
     Dashboard(pages::dashboard::Routes), // -> http://localhost:8000/dashboard/*
-    #[guard = " => admin_guard => forbidden_user"]
+    #[guard = " logged_user => admin_guard => forbidden_user"]
     Admin {
         // -> /admin/:id/*
         id: String,
