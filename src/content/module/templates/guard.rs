@@ -1,3 +1,7 @@
+// ------ ------
+//     Guard
+// ------ ------
+
 pub const _GUARD_TEMPLATE: &str = r###"
 pub fn GUARD_NAME(PAYLOAD) -> Option<bool>
 {
