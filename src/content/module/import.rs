@@ -76,7 +76,7 @@ impl ImportModule {
         },)
     }
 
-    /// Mark tagret file as module for impots
+    /// Mark target file as module for imports.
     pub fn new_target_file_module(
         current_path: &str,
         target_file_path: &str,

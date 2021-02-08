@@ -356,3 +356,4 @@ fn make_query() -> IndexMap<String, String> {
 pub fn start() {
     App::start("app", init, update, view);
 }
+mod pages;

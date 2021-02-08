@@ -399,3 +399,26 @@ fn home(theme: &Theme) -> Node<Msg> {
 pub fn start() {
     App::start("app", init, update, view);
 }
+mod pages;fn not_found(model : &Model) -> Node<Msg>{div!["not_found"]}
+fn forbidden(model : &Model) -> Node<Msg>{div!["forbidden"]}
+
+pub fn guard(model : &Model) -> Option<bool>
+{
+if 1+1 ==2 {
+ log!("Need to implement nice conditions");
+}
+
+None
+}
+
+
+pub fn admin_guard(logged_user : &Option<LoggedData>) -> Option<bool>
+{
+if 1+1 ==2 {
+ log!("Need to implement nice conditions");
+}
+
+None
+}
+
+fn forbidden_user(logged_user : &Option<LoggedData>) -> Node<Msg>{div!["forbidden_user"]}
