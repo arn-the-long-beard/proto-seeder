@@ -274,21 +274,21 @@ And 4 new files with TEA code inside and a new folder for this example.
 
 # Todo 
 
-- Complain if Routes not found ( then it will do nothing ) -> Done
-- Complain if Model not found ( then it will do nothing ) -> Done
-- Extract the Url payload from a route ( id_param, query and children) or Extract nested route if any as single variant tuple -> Done
-- Extract the routes and display stats ( how many view, files it will create ) -> Done
-- Create the right sub directory(ies?) with the correct name(s) ->   `#[modules_path]` -> Done
-- Create the right file when route is module and create its view & init with the right payload extracted in step 2 -> Done
-- Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]` -> Done
-- Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]` -> Done
-- Add build command to test that the generated code can compile
-- Add module in root file where the initial Routes is parsed -> Done
+- [x] Complain if Routes not found ( then it will do nothing ) 
+- [x] Complain if Model not found ( then it will do nothing ) 
+- [x] Extract the Url payload from a route ( id_param, query and children) or Extract nested route if any as single variant tuple 
+- [x] Extract the routes and display stats ( how many view, files it will create ) 
+- [x] Create the right sub directory(ies?) with the correct name(s) ->   `#[modules_path]`
+- [x] Create the right file when route is module and create its view & init with the right payload extracted in step 2 -> Done
+- [x] Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]` 
+- [x] Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]` 
+- [] Add build command to test that the generated code can compile
+- [x] Add module in root file where the initial Routes is parsed 
 
 For later
-- Detect if future file already exist -> Done
-- If future file already exist, try to apply the command line recursively to its Routes enum?
-- Check if content already exist, then it will not add it -> Done
-- Check if local content ( local views and guard ) already exist, then it will not add it -> Done
+- [x] Detect if future file already exist 
+- [x] If future file already exist, try to apply the command line recursively to its Routes enum?
+- [x] Check if content already exist, then it will not add it 
+- [x] Check if local content ( local views and guard ) already exist, then it will not add it 
 
-- Check if update has been made or not and display message instead of now which is actually the number of file to update -> Done ( but need improvement )
+- [x] Check if update has been made or not and display message instead of now which is actually the number of file to update. Needs improvement.
