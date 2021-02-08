@@ -5,13 +5,13 @@ It generates files and methods for a Seed app from a `Route` `enum`.
 
 # Description
 
-This proto cli should be able to parse a rust file and read the Routes enum :
+This proto cli should be able to parse a rust file and read the Route enum :
 
 ```rust
 
  #[derive(Debug, PartialEq, Clone, RoutingModules)]
     #[modules_path = "pages"]
-     pub enum Routes {
+     pub enum Route {
          Other {
              id: String,
              children: Settings,
@@ -43,155 +43,6 @@ This proto cli should be able to parse a rust file and read the Routes enum :
 # Example
 
 See the following **lib.rs**
-
-```rust
-use seed::{prelude::*, *};
-extern crate heck;
-use crate::{
-    models::user::{LoggedData, Role},
-    theme::Theme,
-    top_bar::TopBar,
-};
-#[macro_use]
-extern crate seed_routing;
-use seed_routing::{View, *};
-
-use std::fmt::Debug;
-
-// ------ ------
-//     Init
-// ------ ------
-
-fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    orders
-        .subscribe(Msg::UrlChanged)
-        .subscribe(Msg::UrlRequested)
-        .subscribe(Msg::UserLogged);
-
-    let mut router: Router<Routes> = Router::new();
-    router.init_url_and_navigation(url);
-
-    Model {
-        router,
-    }
-}
-#[derive(Debug, PartialEq, Clone, RoutingModules)]
-#[modules_path = "pages"]
-pub enum Routes {
-    #[guard = " => guard => forbidden"]
-    Login {
-        query: IndexMap<String, String>, // -> http://localhost:8000/login?name=JohnDoe
-    },
-    #[guard = " => guard => forbidden"]
-    Dashboard(pages::dashboard::Routes), // -> http://localhost:8000/dashboard/*
-    #[guard = " => admin_guard => forbidden_user"]
-    Admin {
-        // -> /admin/:id/*
-        id: String,
-        children: pages::admin::Routes,
-    },
-    #[default_route]
-    #[view = " => not_found"] // -> http://localhost:8000/not_found*
-    NotFound,
-    #[view = " => forbidden"] // -> http://localhost:8000/forbidden*
-    Forbidden,
-    #[as_path = ""]
-    #[view = "theme => home"] // -> http://localhost:8000/
-    Home,
-}
-
-// ------ ------
-//     Model
-// ------ ------
-
-struct Model {
-router:Router<Routes>
-}
-
-pub enum Msg {
-}
-
-fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
-//---- update body ----
-}
-
-// ------ ------
-//     View
-// ------ ------
-/// View function which renders stuff to html
-fn view(model: &Model) -> impl IntoNodes<Msg> {
-    vec![
-        header(&model),
-        if let Some(route) = &model.router.current_route {
-            route.view(model)
-        } else {
-            home(&model.theme)
-        },
-    ]
-}
-
-fn header(model: &Model) -> Node<Msg> {
-    div![
-        TopBar::new(who_is_connected(model))
-            .style(model.theme.clone())
-            .set_user_login_state(model.logged_user.is_some())
-            .content(div![
-                style! {St::Display => "flex" },
-                button![
-                    "back",
-                    attrs! {
-                        At::Disabled  =>   (!model.router.can_back()).as_at_value(),
-                    },
-                    ev(Ev::Click, |_| Msg::GoBack)
-                ],
-                button![
-                    "forward",
-                    attrs! {
-                        At::Disabled =>  (!model.router.can_forward()).as_at_value(),
-                    },
-                    ev(Ev::Click, |_| Msg::GoForward)
-                ],
-                span![style! {St::Flex => "5" },],
-                build_account_button(model.logged_user.is_some())
-            ]),
-        render_route(model)
-    ]
-}
-fn home(theme: &Theme) -> Node<Msg> {
-    div![
-        div!["Welcome home!"],
-        match theme {
-            Theme::Dark => {
-                button![
-                    "Switch to Light",
-                    ev(Ev::Click, |_| Msg::SwitchToTheme(Theme::Light))
-                ]
-            }
-            Theme::Light => {
-                button![
-                    "Switch to Dark",
-                    ev(Ev::Click, |_| Msg::SwitchToTheme(Theme::Dark))
-                ]
-            }
-        }
-    ]
-}
-// ------ Other view content
-// ------ ------
-//     Start
-// ------ ------
-
-#[wasm_bindgen(start)]
-pub fn start() {
-    App::start("app", init, update, view);
-}
-fn not_found(model: &Model) -> Node<Msg> {
-    div!["not_found"]
-}
-
-
-```
-
 
 You should get the following output from this command at root of your project: 
 
