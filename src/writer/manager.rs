@@ -114,17 +114,22 @@ impl ContentManager {
                     .create_folder(import_module.folder_path(),)
                     .create_or_update_file(path.clone(),);
 
-                // should be recursive but work only with lib.rs as.
-                // import_module of the folder for now.
+                // Should be recursive but work only with lib.rs as now.
+                // Import_module of the folder for now.
+                // see example with `#[modules_path = "pages"]`
+                // this will be used to update `/pages/mod.rs`
                 if !import_module.meta().clone().mod_import().is_empty() {
-                    eprintln!("---------- detected module folder ");
-
                     eprintln!("---------- detected module folder ");
                     let mut root_module = ImportModule::new_target_file_module(
                         import_module.meta().import_file_location(),
                         import_module.meta().import_file_location(),
                     )
-                    .unwrap();
+                    .unwrap_or_else(|_| {
+                        panic!(
+                            "Should have get the module for {:?} import module ",
+                            import_module
+                        )
+                    },);
 
                     root_module
                         .imports_names
