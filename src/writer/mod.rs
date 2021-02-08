@@ -1,4 +1,4 @@
-//! Check current file and write if necessary.
+//! This module checks the existing files and write or update their content.
 
 use crate::content::SeedContent;
 use indexmap::map::IndexMap;
