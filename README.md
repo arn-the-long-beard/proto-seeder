@@ -133,7 +133,7 @@ And 4 new files with TEA code inside and a new folder for this example.
 - [x] Create the right file when route is module and create its view & init with the right payload extracted in step 2 -> Done
 - [x] Create the local view with the call to the proper model/prop if route is not module ->   `#[view = "Model/prop => local_view"]` 
 - [x] Create the local guard with the call to the proper model/prop ->  ` #[guard = "Model/prop => guard  => callback_view"]` 
-- [] Add build command to test that the generated code can compile
+- [ ] Add build command to test that the generated code can compile
 - [x] Add module in root file where the initial Routes is parsed 
 
 For later
