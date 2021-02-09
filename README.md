@@ -143,3 +143,4 @@ For later
 - [x] Check if local content ( local views and guard ) already exist, then it will not add it 
 
 - [x] Check if update has been made or not and display message instead of now which is actually the number of file to update. Needs improvement.
+- [ ] Generate implementation of the router in lib.rs
