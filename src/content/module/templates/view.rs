@@ -16,7 +16,7 @@ pub const _VIEW_TEMPLATE: &str = r###"
 "###;
 
 pub const _VIEW_TEMPLATE_WITH_ROUTES: &str = r###"
- pub fn view(model_: &Model, nested: &Routes) -> Node<Msg> {
+ pub fn view(nested: &Routes, model_: &Model) -> Node<Msg> {
  div![""]
  }
 "###;

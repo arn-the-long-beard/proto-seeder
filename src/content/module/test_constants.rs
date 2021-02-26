@@ -68,56 +68,65 @@ pub enum Routes {
 
 // -------------- INIT CONST for Tests------------
 pub const _SIMPLE_INIT: &str = r###"
- pub fn init(url:Url, previous_state: Model, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_NESTED: &str = r###"
- pub fn init(url:Url, previous_state: Model, nested: Routes, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, nested: &Routes, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_ID_PARAM: &str = r###"
- pub fn init(url:Url, previous_state: Model, id: &str, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, id: &str, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_ID_PARAM_AND_QUERY: &str = r###"
- pub fn init(url:Url, previous_state: Model, id: &str, query: &IndexMap<String, String>, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, id: &str, query: &IndexMap<String, String>, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_ID_PARAM_AND_QUERY_AND_CHILDREN: &str = r###"
- pub fn init(url:Url, previous_state: Model, id: &str, query: &IndexMap<String, String>, children: &Routes, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, id: &str, query: &IndexMap<String, String>, children: &Routes, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_ID_PARAM_AND_CHILDREN: &str = r###"
- pub fn init(url:Url, previous_state: Model, id: &str, children: &Routes, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, id: &str, children: &Routes, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_QUERY: &str = r###"
- pub fn init(url:Url, previous_state: Model, query: &IndexMap<String, String>, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, query: &IndexMap<String, String>, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_QUERY_AND_CHILDREN: &str = r###"
- pub fn init(url:Url, previous_state: Model, query: &IndexMap<String, String>, children: &Routes, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, query: &IndexMap<String, String>, children: &Routes, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
 pub const _INIT_WITH_CHILDREN: &str = r###"
- pub fn init(url:Url, previous_state: Model, children: &Routes, orders: &mut impl Orders<Msg,> ) {
+ pub fn init(url:Url, previous_state: &mut Model, children: &Routes, orders: &mut impl Orders<Msg,> ) -> Model {
        log!("init for Login");
+       Model {}
        }
 "###;
 
