@@ -10,13 +10,13 @@ pub const _VIEW_COMMENT: &str = r###"
 "###;
 
 pub const _VIEW_TEMPLATE: &str = r###"
- pub fn view(model_: &Model) -> Node<Msg> {
+ pub fn view(model: &Model) -> Node<Msg> {
  div![""]
  }
 "###;
 
 pub const _VIEW_TEMPLATE_WITH_ROUTES: &str = r###"
- pub fn view(nested: &Routes, model_: &Model) -> Node<Msg> {
+ pub fn view(nested: &Routes, model: &Model) -> Node<Msg> {
  div![""]
  }
 "###;
