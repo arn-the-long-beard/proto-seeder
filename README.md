@@ -144,3 +144,5 @@ For later
 
 - [x] Check if update has been made or not and display message instead of now which is actually the number of file to update. Needs improvement.
 - [ ] Generate implementation of the router in lib.rs
+- [ ] Generate a simple Seed app with all minimum files and without routes
+
